@@ -1,0 +1,59 @@
+// === Añade esto a ~/.config/niri/config.kdl ===
+//
+// NOTA: estos comandos asumen que instalaste esta carpeta en una
+// subcarpeta CON NOMBRE dentro de ~/.config/quickshell/, es decir que
+// ~/.config/quickshell/niri-bar/shell.qml existe (no directo en
+// ~/.config/quickshell/shell.qml). Por eso todos los comandos usan
+// "-c" "niri-bar" -- así podés tener las 3 variantes (niri-bar,
+// sway-bar, hyprland-bar) instaladas al mismo tiempo sin que se pisen.
+// "qs" es el binario de quickshell (alias corto habitual -- si en tu
+// sistema el binario se llama "quickshell" en vez de "qs", cambialo en
+// todas las líneas de abajo).
+
+// 1) Lanza quickshell al iniciar niri
+spawn-at-startup "qs" "-c" "niri-bar"
+
+// NOTA sobre los comentarios "// @category" / "// @title" de abajo: son
+// opcionales, y los lee el visor de atajos (botón ⌨ / Mod+Alt+K) para
+// mostrar SOLO los binds anotados así, agrupados por categoría. Si no
+// anotas nada, el visor muestra automáticamente todos los binds de todas
+// formas — así que puedes ir anotando de a poco, a tu ritmo.
+binds {
+    // @category Quickshell
+
+    // @title Abrir/cerrar launcher
+    Mod+Alt+D { spawn "qs" "-c" "niri-bar" "ipc" "call" "launcher" "toggle"; }
+    // @title Abrir/cerrar menú de energía
+    Mod+Shift+X { spawn "qs" "-c" "niri-bar" "ipc" "call" "powermenu" "toggle"; }
+    // @title Abrir/cerrar selector de fondo de pantalla
+    Mod+Alt+W { spawn "qs" "-c" "niri-bar" "ipc" "call" "wallpaper" "toggle"; }
+    // @title Abrir/cerrar esta lista de atajos
+    Mod+Alt+K { spawn "qs" "-c" "niri-bar" "ipc" "call" "keybinds" "toggle"; }
+    // @title Abrir/cerrar dock de accesos rápidos (Keybinds/Ajustes/Wallpaper)
+    Mod+Alt+C { spawn "qs" "-c" "niri-bar" "ipc" "call" "config-dock" "toggle"; }
+    // @title Listado de ventanas abiertas (como "rofi -show window")
+    Mod+Alt+Tab { spawn "qs" "-c" "niri-bar" "ipc" "call" "windowlist" "toggle"; }
+    // @title Abrir/cerrar Ajustes de la barra
+    // Respaldo por si ocultás los módulos "Ajustes" y "Config" de la
+    // barra: este atajo (y el comando `qs -c niri-bar ipc call
+    // bar-config toggle`) siempre funcionan, estén o no visibles esos
+    // botones.
+    Mod+Alt+Comma { spawn "qs" "-c" "niri-bar" "ipc" "call" "bar-config" "toggle"; }
+    // @title Prender/apagar auto-ocultado de la barra
+    Mod+Alt+B { spawn "qs" "-c" "niri-bar" "ipc" "call" "autohide" "toggle"; }
+
+    // @category Multimedia
+
+    // @title Subir volumen
+    XF86AudioRaiseVolume { spawn "wpctl" "set-volume" "-l" "1.0" "@DEFAULT_AUDIO_SINK@" "5%+"; }
+    // @title Bajar volumen
+    XF86AudioLowerVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
+    // @title Silenciar/activar audio
+    XF86AudioMute        { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+    // @title Silenciar/activar micrófono
+    XF86AudioMicMute     { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
+
+    // 4) (Opcional) Brillo, si tienes un portátil con brightnessctl instalado
+    // XF86MonBrightnessUp   { spawn "brightnessctl" "set" "+5%"; }
+    // XF86MonBrightnessDown { spawn "brightnessctl" "set" "5%-"; }
+}

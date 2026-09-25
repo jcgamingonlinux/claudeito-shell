@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Mango
+DesktopNames=mango;wlroots
+Comment=mango WM
+Exec=env WLR_NO_HARDWARE_CURSORS=1 mango
+Icon=mango
+Type=Application

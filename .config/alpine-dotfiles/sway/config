@@ -1,0 +1,326 @@
+# Configuración de Sway para Alpine Linux
+# Ver al final del archivo que se necesita lanzar tanto
+# pipewire, wireplumber y pipewire-pulse y otros archivos
+# para asegurarse que funcione flatpak y obs studio.
+# Fecha:  Julio 13 de 2026
+# Probado en Portátil HP ProBook 430 G3
+# Con Alpine 3.24 y sway 1.12-rc3
+# Jesus Sanchez - YouTube - Linux en Casa 
+
+# Default config for sway
+#
+# Copy this to ~/.config/sway/config and edit it to your liking.
+#
+# Read `man 5 sway` for a complete reference.
+
+### Variables
+#
+# Logo key. Use Mod1 for Alt.
+set $mod Mod4
+# Home row direction keys, like vim
+set $left h
+set $down j
+set $up k
+set $right l
+# Your preferred terminal emulator
+set $term foot
+# Your preferred application launcher
+set $menu wmenu-run
+
+### Output configuration
+#
+# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
+# output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+# output * bg /home/lec/wallpapers/wp1 fill
+#
+# Example configuration:
+#
+# output HDMI-A-1 resolution 1920x1080 position 0,0
+# output eDP-1 resolution 1366x768 position 1920,0
+# output DP-1 resolution 1440x900 position 3360,0
+
+
+
+# Configuro la resolución con wlr-randr para ajustar las frecuencias
+# de las pantallas y ver si con eso no se bloquea obs studio 
+exec ~/.config/sway/resolucion-wlr-randr.sh
+
+
+
+
+#
+# You can get the names of your outputs by running: swaymsg -t get_outputs
+
+### Idle configuration
+#
+# Example configuration:
+#
+exec swayidle -w \
+         timeout 900 'swaylock -f -c 000000' \
+         timeout 1800 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
+         before-sleep 'swaylock -f -c 000000'
+#
+# This will lock your screen after 300 seconds of inactivity, then turn off
+# your displays after another 300 seconds, and turn your screens back on when
+# resumed. It will also lock your screen before your computer goes to sleep.
+
+### Input configuration
+#
+# Example configuration:
+#
+#   input type:touchpad {
+#       dwt enabled
+#       tap enabled
+#       natural_scroll enabled
+#       middle_emulation enabled
+#   }
+#
+input type:keyboard {
+    xkb_layout "es"
+}
+#
+# You can also configure each device individually.
+# Read `man 5 sway-input` for more information about this section.
+
+### Key bindings
+#
+# Basics:
+#
+
+
+# @category Aplicaciones
+
+    # @title Esta Lista de Atajos - Keybinds
+    bindsym $mod+Alt+k exec quickshell -c sway-bar ipc call keybinds toggle
+
+    # @title Abrir Terminal foot
+    bindsym $mod+Return exec $term
+
+    # @title Abrir Launcher de Apps.
+    bindsym $mod+Alt+d exec quickshell -c sway-bar ipc call launcher toggle
+
+    # @title Abrir Menú de Power
+    bindsym $mod+Shift+x exec quickshell -c sway-bar ipc call powermenu toggle
+
+    # @title Abrir Wallpaper Picker
+    bindsym $mod+Alt+w exec quickshell -c sway-bar ipc call wallpaper toggle
+
+
+# @category Ventanas
+
+    # @title Cerrar Ventana - Kill focused window
+    bindsym $mod+Shift+q kill
+
+    # @title Ventana a Pantalla Completa - fullscreen
+    bindsym $mod+f fullscreen
+
+    # @title Ventana en modo flotante o tiling
+    bindsym $mod+Shift+space floating toggle
+
+    # @title Lista de Ventanas Abiertas
+    bindsym $mod+Alt+Tab exec qs -c sway-bar ipc call windowlist toggle
+
+
+# @category Sistema
+
+    # @title Ocultar - Aparecer la barra
+    bindsym $mod+Alt+b exec quickshell -c sway-bar ipc call autohide toggle
+
+    # @title Ajustar la Shell - Barra - Quickshell
+    bindsym $mod+Alt+comma exec quickshell -c sway-bar ipc call bar-config toggle
+
+
+    # @title Recargar Configuración de Sway - Reload
+    bindsym $mod+Shift+c reload
+
+    # @title Exit sway (logs you out of your Wayland session)
+    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
+#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # Start your launcher
+    bindsym $mod+d exec $menu
+
+    # Drag floating windows by holding down $mod and left mouse button.
+    # Resize them with right mouse button + $mod.
+    # Despite the name, also works for non-floating windows.
+    # Change normal to inverse to use left mouse button for resizing and right
+    # mouse button for dragging.
+    floating_modifier $mod normal
+
+
+#
+# Moving around:
+#
+    # Move your focus around
+    bindsym $mod+$left focus left
+    bindsym $mod+$down focus down
+    bindsym $mod+$up focus up
+    bindsym $mod+$right focus right
+    # Or use $mod+[up|down|left|right]
+    bindsym $mod+Left focus left
+    bindsym $mod+Down focus down
+    bindsym $mod+Up focus up
+    bindsym $mod+Right focus right
+
+    # Move the focused window with the same, but add Shift
+    bindsym $mod+Shift+$left move left
+    bindsym $mod+Shift+$down move down
+    bindsym $mod+Shift+$up move up
+    bindsym $mod+Shift+$right move right
+    # Ditto, with arrow keys
+    bindsym $mod+Shift+Left move left
+    bindsym $mod+Shift+Down move down
+    bindsym $mod+Shift+Up move up
+    bindsym $mod+Shift+Right move right
+#
+# Workspaces:
+# Ver archivo en ./config.d/100-workspaces-fijos.conf
+
+    # Note: workspaces can have any name you want, not just numbers.
+    # We just use 1-10 as the default.
+#
+# Layout stuff:
+#
+    # You can "split" the current object of your focus with
+    # $mod+b or $mod+v, for horizontal and vertical splits
+    # respectively.
+    bindsym $mod+b splith
+    bindsym $mod+v splitv
+
+    # Switch the current container between different layout styles
+    bindsym $mod+s layout stacking
+    bindsym $mod+w layout tabbed
+    bindsym $mod+e layout toggle split
+
+
+
+    # Swap focus between the tiling area and the floating area
+    bindsym $mod+space focus mode_toggle
+
+    # Move focus to the parent container
+    bindsym $mod+a focus parent
+#
+# Scratchpad:
+#
+    # Sway has a "scratchpad", which is a bag of holding for windows.
+    # You can send windows there and get them back later.
+
+    # Move the currently focused window to the scratchpad
+    bindsym $mod+Shift+minus move scratchpad
+
+    # Show the next scratchpad window or hide the focused scratchpad window.
+    # If there are multiple scratchpad windows, this command cycles through them.
+    bindsym $mod+minus scratchpad show
+#
+# Resizing containers:
+#
+mode "resize" {
+    # left will shrink the containers width
+    # right will grow the containers width
+    # up will shrink the containers height
+    # down will grow the containers height
+    bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+
+    # Ditto, with arrow keys
+    bindsym Left resize shrink width 10px
+    bindsym Down resize grow height 10px
+    bindsym Up resize shrink height 10px
+    bindsym Right resize grow width 10px
+
+    # Return to default mode
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+#
+# Utilities:
+
+
+#
+    # Volume via Pipewire
+    bindsym --locked XF86AudioMute exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+    bindsym --locked XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- -l 1.1
+    bindsym --locked XF86AudioRaiseVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+ -l 1.1
+
+
+    # Special keys to adjust volume via PulseAudio
+    # bindsym --locked XF86AudioMute exec pactl set-sink-mute \@DEFAULT_SINK@ toggle
+    # bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume \@DEFAULT_SINK@ -5%
+    # bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume \@DEFAULT_SINK@ +5%
+    # bindsym --locked XF86AudioMicMute exec pactl set-source-mute \@DEFAULT_SOURCE@ toggle
+
+    # Special keys to control media via playerctl
+    bindsym --locked XF86AudioPlay exec playerctl play-pause
+    bindsym --locked XF86AudioPause exec playerctl play-pause
+    bindsym --locked XF86AudioPrev exec playerctl previous
+    bindsym --locked XF86AudioNext exec playerctl next
+    bindsym --locked XF86AudioStop exec playerctl stop
+
+    # Special keys to adjust brightness via brightnessctl
+    bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
+    bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
+
+    # Special key to take a screenshot with grim
+    bindsym Print exec grim
+#     bindsym $mod+Print exec xfce4-screenshooter
+    # con este comando, antes de abrir xfce4-screenshooter, se cierran las apps de quickshell de sway-bar
+    # que quedaban por encima de xfce-screenshooter 
+    bindsym $mod+Print exec sh -c "qs -c sway-bar ipc call panic closeAll; sleep 0.05; xfce4-screenshooter"
+
+#
+# Status Bar:
+# con waybar
+# bar {
+#     swaybar_command waybar
+# }
+
+
+exec ~/.config/sway/resolucion-wlr-randr.sh
+exec ~/.config/quickshell/sway-bar/launch-with-icon-theme.sh
+
+
+# con esto funciona flatpak
+exec /usr/libexec/xdg-desktop-portal
+exec /usr/libexec/xdg-desktop-portal-gtk
+exec /usr/libexec/xdg-desktop-portal-wlr
+
+# para el audio
+exec pipewire
+# exec sleep 2
+exec wireplumber
+# exec sleep 2
+exec pipewire-pulse
+
+# variable de entorno - para los iconos gtk en quickshell
+exec export QT_QPA_PLATFORMTHEME=gtk3
+
+
+
+
+include /etc/sway/config.d/*
+
+include ~/.config/sway/config.d/*
+
+

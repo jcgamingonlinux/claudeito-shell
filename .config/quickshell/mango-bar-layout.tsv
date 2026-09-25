@@ -1,0 +1,21 @@
+top
+100
+0
+config	left	0
+menu	left	1
+workspaces	left	1
+activeWindow	left	1
+configDock	center	1
+cpu	right	1
+ram	right	1
+temp	right	1
+volume	right	1
+network	right	1
+systray	right	1
+notifications	right	1
+keybinds	right	1
+battery	right	1
+bluetooth	right	1
+windowlist	right	1
+clock	right	1
+power	right	1

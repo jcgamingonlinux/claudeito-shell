@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+xhost +SI:localuser:root
+SUDO_ASKPASS=/usr/local/bin/askpass-zenity sudo -A env \
+  GDK_BACKEND=x11 DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY GTK_THEME="Adwaita:dark" /usr/sbin/synaptic
+RET=$?
+xhost -SI:localuser:root
+exit $RET
