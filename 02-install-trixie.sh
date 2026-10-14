@@ -137,9 +137,19 @@ MAQUINA_VIRTUAL="no"
 
 # Repositorios de GitLab
 #
-REPOGITLAB="https://gitlab.com/linux-en-casa/claudito-shell.git"
+REPOGITLAB="${REPOGITLAB:-https://gitlab.com/linux-en-casa/claudito-shell.git}"
 # REPOGITLAB="git@gitlab.com:linux-en-casa/claudito-shell.git"
-REPOLOCAL="/tmp/claudito-shell"
+REPOLOCAL="${REPOLOCAL:-/tmp/claudito-shell}"
+
+# Modo prueba local: si el script se ejecuta desde la raiz de un checkout de
+# claudito-shell, usar ese directorio en vez de clonar desde GitLab. Asi se
+# puede probar este repo sin subirlo.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
+REPO_EN_LOCAL="no"
+if [ -d "$SCRIPT_DIR/.config/quickshell" ] && [ -d "$SCRIPT_DIR/release" ]; then
+    REPO_EN_LOCAL="si"
+    REPOLOCAL="$SCRIPT_DIR"
+fi
 
 # Repositorio de Wallpapers
 REPOWALLPAPERS="https://gitlab.com/linux-en-casa/wallpapers.git"
@@ -813,17 +823,22 @@ install_selected() {
     # descargar los dot-files del repo de gitlab
     # lo descargo en /tmp para que no haya problemas con el directorio actual
 
-    echo "Descargando configuraciones desde GitLab..."
-    # borro el subdrectorio si es que ya existe
-    #
-    if [ -d "$REPOLOCAL" ]; then
-        echo "borrando directorio"
-        sudo rm -rf "$REPOLOCAL"
-    fi
+    if [ "$REPO_EN_LOCAL" = "si" ]; then
+        # Modo prueba: usar el repo desde donde se ejecuta el script, sin clonar
+        echo "Modo local: usando el repositorio en $REPOLOCAL (no se clona desde GitLab)"
+    else
+        echo "Descargando configuraciones desde GitLab..."
+        # borro el subdrectorio si su existe
+        #
+        if [ -d "$REPOLOCAL" ]; then
+            echo "borrando directorio"
+            sudo rm -rf "$REPOLOCAL"
+        fi
 
-    cd /tmp
-    # clonar explícitamente al destino esperado
-    git clone "$REPOGITLAB" "$REPOLOCAL" || { echo "Error: No se pudo clonar el repositorio de dotfiles."; exit 1; }
+        cd /tmp
+        # clonar explícitamente al destino esperado
+        git clone "$REPOGITLAB" "$REPOLOCAL" || { echo "Error: No se pudo clonar el repositorio de dotfiles."; exit 1; }
+    fi
 
 
 ################################################
@@ -986,6 +1001,15 @@ install_selected() {
                     cp -r hypr/ $HOME/.config/
                     check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
 
+                    backup_if_exists "$HOME/.config/kitty"
+                    if [ -d "$HOME/.config/kitty" ]; then
+                        echo "borrando directorio"
+                        sudo rm -rf "$HOME/.config/kitty"
+                    fi
+                    cd $REPOLOCAL/.config/
+                    cp -r kitty/ $HOME/.config/
+                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+
                     backup_if_exists "$HOME/.config/quickshell/hyprland-bar"
 
                     if [ -d "$HOME/.config/quickshell/hyprland-bar" ]; then
@@ -1018,6 +1042,14 @@ install_selected() {
                     cp -r niri/ $HOME/.config/
                     check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
 
+                    backup_if_exists "$HOME/.config/alacritty"
+                    if [ -d "$HOME/.config/alacritty" ]; then
+                        echo "borrando directorio"
+                        sudo rm -rf "$HOME/.config/alacritty"
+                    fi
+                    cd $REPOLOCAL/.config/
+                    cp -r alacritty/ $HOME/.config/
+                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
 
                     backup_if_exists "$HOME/.config/quickshell/niri-bar"
                     if [ -d "$HOME/.config/quickshell/niri-bar" ]; then
@@ -1051,6 +1083,15 @@ install_selected() {
 
                     cd $REPOLOCAL/.config/debian-dotfiles
                     cp -r sway/ $HOME/.config/
+                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+
+                    backup_if_exists "$HOME/.config/foot"
+                    if [ -d "$HOME/.config/foot" ]; then
+                        echo "borrando directorio"
+                        sudo rm -rf "$HOME/.config/foot"
+                    fi
+                    cd $REPOLOCAL/.config/
+                    cp -r foot/ $HOME/.config/
                     check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
 
                     backup_if_exists "$HOME/.config/quickshell/sway-bar"

@@ -138,9 +138,19 @@ MAQUINA_VIRTUAL="no"
 
 # Repositorios de GitLab
 #
-REPOGITLAB="https://gitlab.com/linux-en-casa/claudito-shell.git"
+REPOGITLAB="${REPOGITLAB:-https://gitlab.com/linux-en-casa/claudito-shell.git}"
 # REPOGITLAB="git@gitlab.com:linux-en-casa/claudito-shell.git"
-REPOLOCAL="/tmp/claudito-shell"
+REPOLOCAL="${REPOLOCAL:-/tmp/claudito-shell}"
+
+# Modo prueba local: si el script se ejecuta desde la raiz de un checkout de
+# claudito-shell, usar ese directorio en vez de clonar desde GitLab. Asi se
+# puede probar este repo sin subirlo.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
+REPO_EN_LOCAL="no"
+if [ -d "$SCRIPT_DIR/.config/quickshell" ] && [ -d "$SCRIPT_DIR/release" ]; then
+    REPO_EN_LOCAL="si"
+    REPOLOCAL="$SCRIPT_DIR"
+fi
 
 # Repositorio de Wallpapers
 REPOWALLPAPERS="https://gitlab.com/linux-en-casa/wallpapers.git"
@@ -787,17 +797,22 @@ install_selected() {
     # descargar los dot-files del repo de gitlab
     # lo descargo en /tmp para que no haya problemas con el directorio actual
 
-    echo "Descargando configuraciones desde GitLab..."
-    # borro el subdrectorio si es que ya existe
-    #
-    if [ -d "$REPOLOCAL" ]; then
-        echo "borrando directorio"
-        sudo rm -rf "$REPOLOCAL"
-    fi
+    if [ "$REPO_EN_LOCAL" = "si" ]; then
+        # Modo prueba: usar el repo desde donde se ejecuta el script, sin clonar
+        echo "Modo local: usando el repositorio en $REPOLOCAL (no se clona desde GitLab)"
+    else
+        echo "Descargando configuraciones desde GitLab..."
+        # borro el subdrectorio si su existe
+        #
+        if [ -d "$REPOLOCAL" ]; then
+            echo "borrando directorio"
+            sudo rm -rf "$REPOLOCAL"
+        fi
 
-    cd /tmp
-    # clonar explícitamente al destino esperado
-    git clone "$REPOGITLAB" "$REPOLOCAL" || { echo "Error: No se pudo clonar el repositorio de dotfiles."; exit 1; }
+        cd /tmp
+        # clonar explícitamente al destino esperado
+        git clone "$REPOGITLAB" "$REPOLOCAL" || { echo "Error: No se pudo clonar el repositorio de dotfiles."; exit 1; }
+    fi
 
 
 ################################################
@@ -975,7 +990,7 @@ install_selected() {
                     # Compilar e instalar mango
 
                     if [ -d "/tmp/scenefx" ]; then
-                        echo "borrando directorio temporal de ly"
+                        echo "borrando directorio temporal de scenefx"
                         sudo rm -rf "/tmp/scenefx"
                     fi
 
@@ -986,12 +1001,12 @@ install_selected() {
                     sudo ninja -C build install
 
                     if [ -d "/tmp/mango" ]; then
-                        echo "borrando directorio temporal de ly"
+                        echo "borrando directorio temporal de mango"
                         sudo rm -rf "/tmp/mango"
                     fi
 
                     cd /tmp
-                    git clone https://github.com/mangowm/mango.git
+                    git clone -b 0.14.4 https://github.com/mangowm/mango.git
                     cd mango
                     meson build -Dprefix=/usr
                     sudo ninja -C build install
