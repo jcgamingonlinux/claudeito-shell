@@ -4,7 +4,7 @@
 
 ![Claudito Shell](./imagenes/capibara-claudito.png)
 
-Hecho con [Quickshell](https://quickshell.org) · Software libre (GPLv3) · Desarrollado en su mayoría con Claude Code y mostrado en los directos de [@LinuxenCasa]
+Hecho con [Quickshell](https://quickshell.org) · Software libre (GPLv3) · Desarrollado en su mayoría con Claude Code y mostrado en los directos de [**LinuxenCasa**]
 
 > ### 🍴 Fork
 > Este repo es un **fork** del repo original
