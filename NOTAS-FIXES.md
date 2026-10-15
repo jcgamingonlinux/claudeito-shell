@@ -1,7 +1,6 @@
-# Claudito Shell — Fixes aplicados (2026-10-14)
+# Claudeito Shell — Fixes aplicados (2026-10-14)
 
-Repo corregido localmente (sin push). Base: `claudeito-src` (clon de
-`https://gitlab.com/linux-en-casa/claudito-shell`).
+(fork de `https://gitlab.com/linux-en-casa/claudito-shell`).
 
 ## Bugs corregidos
 
@@ -71,7 +70,7 @@ Repo corregido localmente (sin push). Base: `claudeito-src` (clon de
   código real extraído del archivo — 3 casos: vacío → aviso →
   reabre → se aplica la selección; selección directa sin aviso; ESC
   sin tocar el estado previo. (2) Test visual en vivo en la mini PC
-  (CachyOS, mini PC de prueba): con el menú de WMs vacío, ENTER mostró
+  (CachyOS, mini PC Minisforum X1 Lite Elite 2): con el menú de WMs vacío, ENTER mostró
   el aviso exacto y reabrió el menú; después se marcó hyprland con
   ESPACIO+ENTER y quedó `wm_hyprland=1` en `~/.wm-installer-state`.
 
@@ -100,7 +99,7 @@ Repo corregido localmente (sin push). Base: `claudeito-src` (clon de
     no_selection ...; then return 0; fi`: ENTER en el aviso reabre el
     menú; **ESC en el aviso vuelve al menú principal sin tocar la
     selección** (lo que dice el propio texto del aviso).
-  - Todos los msgbox/infobox restantes (Resumen, Leeme, Bienvenida,
+  - Todos los msgbox/infobox restantes (Resumen, Léeme, Bienvenida,
     Preparando, "no hay backups", "restauración completada", etc.)
     llevan `|| true` para que un ESC/cierre no mate el script.
 - **Verificado:** harness contra el código real extraído de cada script
@@ -109,12 +108,11 @@ Repo corregido localmente (sin push). Base: `claudeito-src` (clon de
   restauración completa exitosa (archivo realmente restaurado). Los 3
   scripts pasan.
 
-### 9. [PEDIDO] Créditos: "JC Gaming On Linux - fork, mejoras y testeo, asistido por JC IA"
+### 9. Créditos: "JC Gaming On Linux - fork, mejoras y testeo, asistido por JC IA"
 - Agregado en los 3 scripts: (a) bloque de créditos al inicio del
-  archivo y (b) en el diálogo "Instrucciones - Leeme" (el crédito que
-  se ve desde el menú principal), debajo de "Script by Gabriel Parri".
+  archivo y (b) en el diálogo "Instrucciones - Léeme"
 
-### 10. [PEDIDO] Advertencia "WM primero" + créditos en Bienvenida (los 3 scripts)
+### 10. Advertencia "WM primero" + créditos en Bienvenida (los 3 scripts)
 - **Problema reportado:** al pasar a otra sección sin haber elegido un
   Window Manager, el script se cerraba en vez de indicar que falta el WM.
 - **Fix (los 3 scripts):**
@@ -126,13 +124,12 @@ Repo corregido localmente (sin push). Base: `claudeito-src` (clon de
     antes de continuar." y, tras Aceptar (ENTER), `continue` de vuelta
     al menú principal. Con WM elegido, las secciones abren como siempre.
   - Créditos "JC Gaming On Linux - fork, mejoras y testeo, asistido por
-    JC IA" agregados también en la pantalla de **Bienvenida** (bajo
-    "Script by Gabriel Parri"), igual que en el Leeme.
+    JC IA" agregados también en la pantalla de **Bienvenida** igual que en el Léeme.
 - **Verificado en vivo (mini PC, HOME fresco):** bienvenida muestra el
   crédito; entrar a software/apps/dm/summary/restore/leeme sin WM
   muestra el aviso y Aceptar vuelve al menú principal; con WM marcado
   (niri) las secciones abren sin aviso. Secciones probadas sin WM
-  (todas OK, sin crash): software (basico), apps (yay), dm (sddm),
+  (todas OK, sin crash): software (básico), apps (yay), dm (sddm),
   summary, restore, leeme.
 
 ### 11. [FUNCIONAL] Fixes defensivos `set -e`: estado viejo, HOME y hostnamectl (los 3 scripts)
@@ -167,78 +164,11 @@ Repo corregido localmente (sin push). Base: `claudeito-src` (clon de
   inicializado para todas las claves, por lo que `wm_selected` es
   seguro bajo `set -u`.
 
-## Verificado (no era bug)
-- `xdg-user-dirs-update` (trixie/forky): es un **comando** (del
-  paquete `xdg-user-dirs`), no un paquete a instalar. El paquete
-  `xdg-user-dirs` sí está en los 3 scripts. Falso positivo.
-- `meson` sin `ninja-build` en forky: `meson` trae `ninja-build`
-  como dependencia. Falso positivo.
-- `evince`, `gdebi`, `gimp`, `nwg-displays` en arrays `*_backports`
-  de trixie: no están en backports pero SÍ en main; `apt -t
-  trixie-backports` los toma de main. Funciona.
-- `hyprland`, `hyprland-guiutils`, `quickshell`,
-  `xdg-desktop-portal-hyprland`: no están en main de trixie, pero
-  SÍ en trixie-backports, donde el script los instala. OK.
-- Barras QML (4 comp): los diffs grandes (KeybindsPopup, Workspaces,
-  WindowList, ActiveWindow, FocusedScreen) son comandos legítimos por
-  compositor (`hyprctl` / `niri msg` / `swaymsg` / `mmsg`). Los
-  pequeños son diffs cosméticos legítimos.
-- scenefx: el tag `0.5` existe en GitHub y el proyecto es C (meson,
-  sin Rust). Build de forky cubierto.
 
 ## Optimizaciones APLICADAS (0.2)
-1. **Modo prueba local (los 3 scripts)**: los scripts siempre
-   clonaban el repo desde GitLab a `/tmp/claudito-shell`, así que no
-   se podía probar esta versión corregida sin subirla. Ahora:
-   - Si el script se ejecuta desde la raíz de un checkout de
-     claudito-shell (detecta `.config/quickshell` + `release/`), usa
-     ese directorio directamente y **no clona** desde GitLab.
-   - `REPOGITLAB` y `REPOLOCAL` se pueden sobreescribir con
-     variables de entorno (`REPOLOCAL=/ruta bash 01-install-arch.sh`).
-   - El clonado original (borrar + `git clone`) queda intacto en el
-     modo normal.
-2. **Forky: mango fijado al tag `0.14.4`** (`git clone -b 0.14.4
+
+1. **Forky: mango fijado al tag `0.14.4`** (`git clone -b 0.14.4
    https://github.com/mangowm/mango.git`). Antes compilaba desde
    `master` (sin version fija; hoy era 0.18.0, la config del repo
    está probada contra 0.14.4, la misma del `.deb` de trixie).
    El tag `0.14.4` existe (verificado en GitHub API).
-
-## Optimizaciones NO aplicadas (verificadas, para decidir)
-1. **Trixie usa `.deb` forky** de `xwayland-satellite`: verificado
-   que ese `.deb` tiene **Depends vacío** (sin dependencias), así que
-   instala sin problemas sobre trixie. No se cambia.
-2. **`mango_0.14.4-1_amd64-trixie.deb`** sigue sin usarse (trixie no
-   tiene opción mango en el menú; forky compila). Se deja en
-   `release/` por si se quiere.
-3. **Forky: `sudo apt install -y pcmanfm`** (línea ~760, antes del
-   pack de software): NO es redundante — si el usuario no elige
-   ningún pack, esa es la única instalación de pcmanfm. Se deja.
-4. **Forky: `sudo rm -rf`** sobre `~/.config/...` (directorios del
-   usuario): funciona; es estilo. No se cambia para no ensanchar el
-   diff.
-5. **Arch**: `xorg-server` en base + `xorg-xwayland` por compositor
-   es coherente; si en el futuro solo se usan compositores Wayland,
-   se podría mover `xorg-server` a los casos que lo necesiten
-   (xfce4-screenshooter/xterm son apps X).
-
-## Cómo probarlo (sin subir nada)
-El repo tiene git local (histórico completo del upstream + varios
-commits con los fixes, autores "Linux en Casa" y "jcgamingonlinux").
-
-1. Copiá `claudeito-fixes/` a la máquina de prueba (VM) o probalo
-   directo en este disco:
-   ```
-   cd claudeito-fixes
-   sudo ./01-install-arch.sh      # Arch / derivadas
-   sudo ./02-install-trixie.sh    # Debian 13 Trixie
-   sudo ./03-install-forky.sh     # Debian 14 Forky (testing)
-   ```
-   Al detectarse que se ejecuta desde la raíz del repo, mostrará
-   "Modo local: usando el repositorio en ... (no se clona desde
-   GitLab)" y usará las configs/debs de ESTE repo (los corregidos).
-2. Alternativa: desde cualquier directorio,
-   `REPOLOCAL=/ruta/a/claudeito-fixes sudo bash /ruta/01-install-arch.sh`
-   (clona desde GitLab a esa ruta; útil si el repo va en otra rama).
-3. Si después decides subirlo: el git ya está armado
-   (`git log` muestra el commit de fixes); solo hay que
-   `git remote add fork <tu-gitlab> && git push -u fork $(git branch --show-current)`.
