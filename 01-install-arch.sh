@@ -501,20 +501,42 @@ save_state() {
 
 # Menús interactivos con dialog
 
+# Advertencia cuando no se marcó ninguna opción en un menú:
+# avisa que hay que elegir al menos una y muestra las teclas a usar.
+# Uso: warn_no_selection <título> <detalle de qué elegir>
+warn_no_selection() {
+    local title="$1"
+    local detalle="$2"
+    dialog --title "$title" --msgbox \
+        "No has seleccionado ninguna opción.\n\n$detalle\n\nTeclas:\n  ESPACIO: marcar / desmarcar una opción\n  ENTER: confirmar la selección\n\nElegí al menos una opción,\no presioná ESC para volver (no cambia la selección actual)." \
+        16 80
+}
+
+
 show_wm_menu() {
     local items=()
+    local out=""
 
-    for k in "${!WM_DESC[@]}"; do
-        local flag="off"; [[ ${SEL_WM[$k]} -eq 1 ]] && flag="on"
-        items+=("$k" "${WM_DESC[$k]}" "$flag")
+    # Recorro hasta que se marque al menos una opción (o se cancele con ESC)
+    while true; do
+        items=()
+        for k in "${!WM_DESC[@]}"; do
+            local flag="off"; [[ ${SEL_WM[$k]} -eq 1 ]] && flag="on"
+            items+=("$k" "${WM_DESC[$k]}" "$flag")
+        done
+
+        out=$(dialog --title "Wayland Compositors" \
+            --checklist "Seleccioná WCs (Espacio para marcar, Enter para confirmar):" \
+            20 78 10 \
+            "${items[@]}" \
+            3>&1 1>&2 2>&3) || return 0   # ESC/cancelar: no toco la selección
+
+        # Se marcó algo: lo aplico
+        [[ -n "$out" ]] && break
+
+        # No se marcó nada: aviso con las teclas y vuelvo a mostrar el menú
+        warn_no_selection "Wayland Compositors" "Para continuar necesitás seleccionar al menos un compositor."
     done
-
-    local out
-    out=$(dialog --title "Wayland Compositors" \
-        --checklist "Seleccioná WCs (Espacio para marcar, Enter para confirmar):" \
-        20 78 10 \
-        "${items[@]}" \
-        3>&1 1>&2 2>&3) || return 0
 
     # Checklist => múltiples; limpio y marco lo elegido
     for k in "${!WM_DESC[@]}"; do SEL_WM[$k]=0; done
@@ -529,20 +551,25 @@ show_wm_menu() {
 
 show_software_menu() {
     local items=()
-    for k in "${!SOFTWARE_DESC[@]}"; do
-        local flag="off"; [[ ${SEL_SOFTWARE[$k]} -eq 1 ]] && flag="on"
-        items+=("$k" "${SOFTWARE_DESC[$k]}" "$flag")
+    local out=""
+
+    while true; do
+        items=()
+        for k in "${!SOFTWARE_DESC[@]}"; do
+            local flag="off"; [[ ${SEL_SOFTWARE[$k]} -eq 1 ]] && flag="on"
+            items+=("$k" "${SOFTWARE_DESC[$k]}" "$flag")
+        done
+
+        out=$(dialog --title "Paquetes de Software" \
+            --radiolist "Seleccioná un Pack de Software (Espacio para marcar, Enter para confirmar):" \
+            20 78 10 \
+            "${items[@]}" \
+            3>&1 1>&2 2>&3) || return 0   # ESC/cancelar: no toco la selección
+
+        [[ -n "$out" ]] && break
+
+        warn_no_selection "Paquetes de Software" "Para continuar necesitás seleccionar al menos un pack."
     done
-
-    local out
-    out=$(dialog --title "Paquetes de Software" \
-        --radiolist "Seleccioná un Pack de Software (Espacio para marcar, Enter para confirmar):" \
-        20 78 10 \
-        "${items[@]}" \
-        3>&1 1>&2 2>&3) || return 0
-
-    # Si no se eligió nada (poco probable en radiolist), no toco el estado previo
-    [[ -z "$out" ]] && return 0
 
     # Radiolist -> una sola opción activa
     for k in "${!SOFTWARE_DESC[@]}"; do SEL_SOFTWARE[$k]=0; done
@@ -557,17 +584,25 @@ show_software_menu() {
 
 show_flatpak_menu() {
     local items=()
-    for k in "${!FLATPAK_DESC[@]}"; do
-        local flag="off"; [[ ${SEL_FLATPAK[$k]} -eq 1 ]] && flag="on"
-        items+=("$k" "${FLATPAK_DESC[$k]}" "$flag")
-    done
+    local out=""
 
-    local out
-    out=$(dialog --title "Apps Flatpak (Flathub)" \
-        --checklist "Seleccioná las apps Flatpak a instalar (Espacio para marcar, Enter para confirmar):" \
-        20 78 10 \
-        "${items[@]}" \
-        3>&1 1>&2 2>&3) || return 0
+    while true; do
+        items=()
+        for k in "${!FLATPAK_DESC[@]}"; do
+            local flag="off"; [[ ${SEL_FLATPAK[$k]} -eq 1 ]] && flag="on"
+            items+=("$k" "${FLATPAK_DESC[$k]}" "$flag")
+        done
+
+        out=$(dialog --title "Apps Flatpak (Flathub)" \
+            --checklist "Seleccioná las apps Flatpak a instalar (Espacio para marcar, Enter para confirmar):" \
+            20 78 10 \
+            "${items[@]}" \
+            3>&1 1>&2 2>&3) || return 0   # ESC/cancelar: no toco la selección
+
+        [[ -n "$out" ]] && break
+
+        warn_no_selection "Apps Flatpak (Flathub)" "Para instalar apps Flatpak necesitás seleccionar al menos una."
+    done
 
     for k in "${!FLATPAK_DESC[@]}"; do SEL_FLATPAK[$k]=0; done
     for c in $out; do
@@ -580,17 +615,25 @@ show_flatpak_menu() {
 
 show_apps_menu() {
     local items=()
-    for k in "${!APPS_DESC[@]}"; do
-        local flag="off"; [[ ${SEL_APPS[$k]} -eq 1 ]] && flag="on"
-        items+=("$k" "${APPS_DESC[$k]}" "$flag")
-    done
+    local out=""
 
-    local out
-    out=$(dialog --title "Aplicaciones Adicionales" \
-        --checklist "Seleccioná aplicaciones (Espacio para marcar, Enter para confirmar):" \
-        20 78 10 \
-        "${items[@]}" \
-        3>&1 1>&2 2>&3) || return 0
+    while true; do
+        items=()
+        for k in "${!APPS_DESC[@]}"; do
+            local flag="off"; [[ ${SEL_APPS[$k]} -eq 1 ]] && flag="on"
+            items+=("$k" "${APPS_DESC[$k]}" "$flag")
+        done
+
+        out=$(dialog --title "Aplicaciones Adicionales" \
+            --checklist "Seleccioná aplicaciones (Espacio para marcar, Enter para confirmar):" \
+            20 78 10 \
+            "${items[@]}" \
+            3>&1 1>&2 2>&3) || return 0   # ESC/cancelar: no toco la selección
+
+        [[ -n "$out" ]] && break
+
+        warn_no_selection "Aplicaciones Adicionales" "Para continuar necesitás seleccionar al menos una aplicación."
+    done
 
     for k in "${!APPS_DESC[@]}"; do SEL_APPS[$k]=0; done
     for c in $out; do
@@ -612,17 +655,25 @@ show_apps_menu() {
 
 show_dm_menu() {
     local items=()
-    for k in "${!DM_DESC[@]}"; do
-        local flag="off"; [[ ${SEL_DM[$k]} -eq 1 ]] && flag="on"
-        items+=("$k" "${DM_DESC[$k]}" "$flag")
-    done
+    local out=""
 
-    local out
-    out=$(dialog --title "Display Managers" \
-        --radiolist "Seleccioná uno o varios DMs (Espacio para marcar, Enter para confirmar):" \
-        20 78 10 \
-        "${items[@]}" \
-        3>&1 1>&2 2>&3) || return 0
+    while true; do
+        items=()
+        for k in "${!DM_DESC[@]}"; do
+            local flag="off"; [[ ${SEL_DM[$k]} -eq 1 ]] && flag="on"
+            items+=("$k" "${DM_DESC[$k]}" "$flag")
+        done
+
+        out=$(dialog --title "Display Managers" \
+            --radiolist "Seleccioná uno o varios DMs (Espacio para marcar, Enter para confirmar):" \
+            20 78 10 \
+            "${items[@]}" \
+            3>&1 1>&2 2>&3) || return 0   # ESC/cancelar: no toco la selección
+
+        [[ -n "$out" ]] && break
+
+        warn_no_selection "Display Managers" "Para continuar necesitás seleccionar al menos un display manager."
+    done
 
     # Radiolist => una sola opción
     for k in "${!DM_DESC[@]}"; do SEL_DM[$k]=0; done

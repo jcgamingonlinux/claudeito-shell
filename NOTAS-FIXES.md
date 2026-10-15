@@ -52,6 +52,29 @@ Repo corregido localmente (sin push). Base: `claudeito-src` (clon de
 - Hallazgo reportado por el pase de calidad (subagente) tras
   aplicar los fixes 1-5.
 
+### 7. [FUNCIONAL] Menús: no advertía si el usuario no seleccionaba nada (los 3 scripts)
+- **El problema:** en los 5 menús de selección (WM, Software, Apps, DM,
+  Flatpak), si el usuario presionaba ENTER sin marcar ninguna opción
+  (o desmarcaba todas), el script seguía adelante **sin avisar** con
+  esa sección vacía: en una instalación nueva quedaba sin WM o sin
+  pack de software y el usuario no entendía por qué no se instaló
+  nada. No había ninguna ayuda con las teclas que había que usar.
+- **Fix:** nueva función `warn_no_selection()` + cada menú ahora
+  entra en un loop: si se confirma con la selección vacía, muestra un
+  aviso de diálogo explicando que hay que elegir al menos una opción
+  con las teclas (ESPACIO = marcar/desmarcar, ENTER = confirmar,
+  ESC = volver sin tocar la selección) y reabre el menú. Si el
+  usuario presiona ESC, se mantiene el estado previo (comportamiento
+  original). Se aplica a los 5 menús de los 3 scripts (código
+  idéntico en los tres, verificado por md5).
+- **Verificado:** (1) harness unitario con `dialog` simulado contra el
+  código real extraído del archivo — 3 casos: vacío → aviso →
+  reabre → se aplica la selección; selección directa sin aviso; ESC
+  sin tocar el estado previo. (2) Test visual en vivo en la mini PC
+  (CachyOS, 192.168.1.12): con el menú de WMs vacío, ENTER mostró
+  el aviso exacto y reabrió el menú; después se marcó hyprland con
+  ESPACIO+ENTER y quedó `wm_hyprland=1` en `~/.wm-installer-state`.
+
 ## Verificado (no era bug)
 - `xdg-user-dirs-update` (trixie/forky): es un **comando** (del
   paquete `xdg-user-dirs`), no un paquete a instalar. El paquete
