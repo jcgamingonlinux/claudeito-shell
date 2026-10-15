@@ -4,14 +4,14 @@
 
 ![Claudito Shell](./imagenes/capibara-claudito.png)
 
-Hecho con [Quickshell](https://quickshell.org) · Software libre (GPLv3) · Desarrollado en su mayoría con Claude Code y mostrado en los directos de [@LinuxenCasa](https://www.youtube.com/@LinuxenCasa)
+Hecho con [Quickshell](https://quickshell.org) · Software libre (GPLv3) · Desarrollado en su mayoría con Claude Code y mostrado en los directos de [@LinuxenCasa]
 
 > ### 🍴 Fork
 > Este repo es un **fork** del repo original
 > [linux-en-casa/claudito-shell](https://gitlab.com/linux-en-casa/claudito-shell) (GitLab),
 > donde el script de instalación lo desarrolló **Gabriel Parri** (gabeeOS Linux).
 > Este fork, mantenido por **JC Gaming On Linux**
-> ([@LinuxenCasa](https://www.youtube.com/@LinuxenCasa)), agrega fixes y mejoras
+> (https://www.youtube.com/@jcgamingonlinux)), agrega fixes y mejoras
 > en los scripts de instalación y sus menús (octubre de 2026), aplicadas y
 > verificadas sobre el original.
 >
