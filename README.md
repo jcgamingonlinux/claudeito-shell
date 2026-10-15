@@ -6,6 +6,40 @@
 
 Hecho con [Quickshell](https://quickshell.org) · Software libre (GPLv3) · Desarrollado en su mayoría con Claude Code y mostrado en los directos de [@LinuxenCasa](https://www.youtube.com/@LinuxenCasa)
 
+> ### 🍴 Fork
+> Este repo es un **fork** del repo original
+> [linux-en-casa/claudito-shell](https://gitlab.com/linux-en-casa/claudito-shell) (GitLab),
+> donde el script de instalación lo desarrolló **Gabriel Parri** (gabeeOS Linux).
+> Este fork, mantenido por **JC Gaming On Linux**
+> ([@LinuxenCasa](https://www.youtube.com/@LinuxenCasa)), agrega fixes y mejoras
+> en los scripts de instalación y sus menús (octubre de 2026), aplicadas y
+> verificadas sobre el original.
+>
+> **Fixes de este fork (resumen):**
+>
+> 1. **[BLOQUEANTE] `01-install-arch.sh`:** el paquete `xorg` no existe en
+>    Arch y abortaba la instalación base → corregido a `xorg-server`.
+> 2. **`01-install-arch.sh`:** condición invertida al limpiar `/tmp/yay` y
+>    `/tmp/paru` (re-ejecutar el script abortaba la instalación).
+> 3. **`01-install-arch.sh` y `02-install-trixie.sh`:** no se copiaban las
+>    configs de las terminales (kitty, alacritty, foot) según el compositor.
+> 4. **Menús (los 3 scripts):** ahora advertir con las teclas si el usuario
+>    confirma sin seleccionar nada (antes seguía con la sección vacía, sin avisar).
+> 5. **Menús (los 3 scripts):** "Cancelar" cerraba el script (por `set -e`)
+>    en vez de volver al menú principal — 57 llamadas a `dialog` protegidas.
+> 6. **Aviso "WM primero" (los 3 scripts):** entrar a otra sección sin haber
+>    elegido Window Manager muestra un aviso y vuelve al menú principal
+>    (antes el script se cerraba).
+> 7. **Fixes defensivos `set -e` (los 3 scripts):** estado viejo con claves
+>    inexistentes en `load_state`, `$HOME` inexistente en `save_state` y
+>    `hostnamectl` sin systemd en la Bienvenida — ya no matan el script.
+> 8. **Cosméticos:** mensajes copy-paste corregidos (mango en forky, SDDM en el
+>    caso ly) y créditos del fork en Leeme y Bienvenida.
+>
+> Todos los fixes fueron verificados con harness unitarios contra el código
+> real y pruebas en vivo. Detalles completos (causa, fix y verificación de
+> cada uno): [NOTAS-FIXES.md](./NOTAS-FIXES.md)
+
 **Funciona en:** [niri](https://github.com/YaLTeR/niri) · [Sway](https://swaywm.org) · [Hyprland](https://hyprland.org) (config Lua, 0.55+) · [mango](https://github.com/mangowm/mango)
 
 **Ir directo a:** [Instalación](#instalación) · [Configuración](#configuración) · [Solución de problemas](#solución-de-problemas) · [Todas las características](#características-en-detalle)
@@ -115,12 +149,15 @@ Según los módulos que uses:
 Son scripts en bash que usan `dialog` para los menús interactivos. Descargá el repositorio y ejecutá el que corresponda a tu distribución:
 
 ```sh
-git clone https://gitlab.com/linux-en-casa/claudito-shell.git
+git clone https://github.com/jcgamingonlinux/claudeito-shell.git
 cd claudito-shell
 bash 01-install-arch.sh        # Arch Linux
 # bash 02-install-trixie.sh    # Debian 13 Trixie
 # bash 03-install-forky.sh     # Debian 14 Forky
 ```
+
+Ese es el fork corregido (el de este repo). El repo original, sin estos
+fixes: [gitlab.com/linux-en-casa/claudito-shell](https://gitlab.com/linux-en-casa/claudito-shell).
 
 | Script | Distribución | Compositores que se pueden instalar | Notas |
 | --- | --- | --- | --- |
@@ -616,6 +653,10 @@ comparten casi todo el código y el diseño, adaptadas cada una a su compositor 
 El desarrollo de este Escritorio se hizo en su mayoría usando la IA de Claude Code y se fueron
 mostrando los avances y ajustes en los directos del canal de YouTube en Septiembre de 2026.
 
+Esta versión es el **fork mantenido por JC Gaming On Linux**: incluye los fixes y
+mejoras documentados en [NOTAS-FIXES.md](./NOTAS-FIXES.md) sobre el repo original
+([gitlab.com/linux-en-casa/claudito-shell](https://gitlab.com/linux-en-casa/claudito-shell)).
+
 https://www.youtube.com/@LinuxenCasa
 
 ## Créditos
@@ -631,6 +672,12 @@ https://www.youtube.com/@LinuxenCasa
     - Adolfo Perez
     - Alvaro Valcer 
        https://www.youtube.com/@alvarovalcer
+
++ **JC Gaming On Linux** — este fork: fixes y mejoras en los scripts de
+  instalación y sus menús (ver [NOTAS-FIXES.md](./NOTAS-FIXES.md)),
+  asistido por JC IA.
+
+    https://www.youtube.com/@LinuxenCasa
 
 + Todos los que participaron en los directos de instalación y configuración a pulso.
 

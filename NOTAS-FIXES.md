@@ -71,7 +71,7 @@ Repo corregido localmente (sin push). Base: `claudeito-src` (clon de
   código real extraído del archivo — 3 casos: vacío → aviso →
   reabre → se aplica la selección; selección directa sin aviso; ESC
   sin tocar el estado previo. (2) Test visual en vivo en la mini PC
-  (CachyOS, 192.168.1.12): con el menú de WMs vacío, ENTER mostró
+  (CachyOS, mini PC de prueba): con el menú de WMs vacío, ENTER mostró
   el aviso exacto y reabrió el menú; después se marcó hyprland con
   ESPACIO+ENTER y quedó `wm_hyprland=1` en `~/.wm-installer-state`.
 
@@ -222,8 +222,8 @@ Repo corregido localmente (sin push). Base: `claudeito-src` (clon de
    (xfce4-screenshooter/xterm son apps X).
 
 ## Cómo probarlo (sin subir nada)
-El repo tiene git local (histórico completo del upstream + un commit
-con todos los fixes, autor "Linux en Casa").
+El repo tiene git local (histórico completo del upstream + varios
+commits con los fixes, autores "Linux en Casa" y "jcgamingonlinux").
 
 1. Copiá `claudeito-fixes/` a la máquina de prueba (VM) o probalo
    directo en este disco:
