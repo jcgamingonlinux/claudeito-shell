@@ -135,6 +135,38 @@ Repo corregido localmente (sin push). Base: `claudeito-src` (clon de
   (todas OK, sin crash): software (basico), apps (yay), dm (sddm),
   summary, restore, leeme.
 
+### 11. [FUNCIONAL] Fixes defensivos `set -e`: estado viejo, HOME y hostnamectl (los 3 scripts)
+- **Problema (hallado por el pase de QA):** con `set -euo pipefail`,
+  tres líneas podían cerrar el script de forma silenciosa:
+  - `load_state`: la línea `[[ -v WM_DESC[$k] ]] && SEL_WM[$k]=$v`
+    (y las de `apps_*`/`flatpak_*`) devuelve 1 si el archivo de estado
+    trae una clave que ya no existe en el menú (ej. `wm_mango=1` en la
+    versión Arch, que no tiene mango). Si esa era la última línea, el
+    `while` devolvía 1, la función devolvía 1 y la llamada suelta
+    `load_state` moría el script al arrancar.
+  - `save_state`: la primera línea `: > "$STATE_FILE"` fallaba si el
+    directorio de `$HOME` no existía (ej. arranque con HOME inválido).
+  - `show_welcome` (01): `host="$(hostnamectl | grep hostname | awk ... )"`:
+    si `hostnamectl` no existe o no emite "hostname" (sin systemd), el
+    pipeline fallaba y moría el script en la Bienvenida.
+- **Fix (los 3 scripts; `hostnamectl` solo existe en 01):**
+  - `load_state`: `|| true` en las 3 líneas de asignación + `return 0`
+    explícito al final.
+  - `save_state`: `mkdir -p "$(dirname "$STATE_FILE")"` antes de
+    escribir.
+  - `01 show_welcome`: `hostnamectl 2>/dev/null | ... || true`.
+- **Verificado:** `bash -n` en los 3; harness unitario contra el código
+  real extraído (T1: estado viejo con clave inválida → sobrevive y
+  conserva las válidas; T2: HOME inexistente → `save_state` crea el
+  directorio y escribe; T3: pipeline de `hostnamectl` fallando → no
+  mata el script); test A/B de la función `load_state` con el estado
+  viejo (sin fix: devuelve 1 y moría; con fix: rc=0); consistencia
+  entre los 3 scripts (los parches son idénticos, verificado por
+  patrón). Además: todos los usos de `check_error` llevan `|| exit 1`
+  (36/36 en 01, 35/35 en 02, 40/40 en 03) y `SEL_WM` está
+  inicializado para todas las claves, por lo que `wm_selected` es
+  seguro bajo `set -u`.
+
 ## Verificado (no era bug)
 - `xdg-user-dirs-update` (trixie/forky): es un **comando** (del
   paquete `xdg-user-dirs`), no un paquete a instalar. El paquete

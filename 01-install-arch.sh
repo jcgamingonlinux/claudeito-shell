@@ -475,24 +475,28 @@ load_state() {
     while IFS='=' read -r k v; do
         if [[ $k == wm_* ]]; then
             k=${k#wm_}
-            [[ -v WM_DESC[$k] ]] && SEL_WM[$k]=$v
+            [[ -v WM_DESC[$k] ]] && SEL_WM[$k]=$v || true
 #         elif [[ $k == software_* ]]; then
 #             k=${k#software_}
 #             [[ -v SOFTWARE_DESC[$k] ]] && SEL_SOFTWARE[$k]=$v
         elif [[ $k == apps_* ]]; then
             k=${k#apps_}
-            [[ -v APPS_DESC[$k] ]] && SEL_APPS[$k]=$v
+            [[ -v APPS_DESC[$k] ]] && SEL_APPS[$k]=$v || true
         elif [[ $k == flatpak_* ]]; then
             k=${k#flatpak_}
-            [[ -v FLATPAK_DESC[$k] ]] && SEL_FLATPAK[$k]=$v
+            [[ -v FLATPAK_DESC[$k] ]] && SEL_FLATPAK[$k]=$v || true
 #         elif [[ $k == dm_* ]]; then
 #             k=${k#dm_}
 #             [[ -v DM_DESC[$k] ]] && SEL_DM[$k]=$v
         fi
     done < "$STATE_FILE"
+    # return 0 explícito: un estado viejo (clave que ya no existe en el menú)
+    # no debe matar el script bajo set -e.
+    return 0
 }
 
 save_state() {
+    mkdir -p "$(dirname "$STATE_FILE")"   # si HOME no existe, set -e no mata el script
     : > "$STATE_FILE"
     for k in "${!WM_DESC[@]}"; do printf 'wm_%s=%d\n' "$k" "${SEL_WM[$k]}" >> "$STATE_FILE"; done
     for k in "${!SOFTWARE_DESC[@]}"; do printf 'software_%s=%d\n' "$k" "${SEL_SOFTWARE[$k]}" >> "$STATE_FILE"; done
@@ -1324,7 +1328,7 @@ install_selected() {
 show_welcome() {
     # Info útil para mostrar
     local host user distro ver fecha
-    host="$(hostnamectl | grep hostname | awk '{print $3}')"
+    host="$(hostnamectl 2>/dev/null | grep hostname | awk '{print $3}' || true)"   # sin systemd/no hay match: no mata el script
     user="$USER"
     distro="$(. /etc/os-release 2>/dev/null; echo "${NAME:-Debian}")"
     ver="$(. /etc/os-release 2>/dev/null; echo "${VERSION:-}")"
