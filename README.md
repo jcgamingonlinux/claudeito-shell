@@ -6,12 +6,11 @@
 
 Hecho con [Quickshell](https://quickshell.org) · 
 Software libre (GPLv3) · 
-Script Desarrollado en su mayoría con Claude Code y mostrado en los directos de [**LinuxenCasa**]
+Script Desarrollado en su mayoría con Claude Code y mostrado en los directos de [**LinuxenCasa**](https://www.youtube.com/@LinuxenCasa)
 
 > ### 🍴 Fork
-> Este repo es un **fork**
-> Mantenido por **JC Gaming On Linux**
-> (https://www.youtube.com/@jcgamingonlinux)), agrega fixes y mejoras
+> Este repo es un **fork** mantenido por **JC Gaming On Linux**
+> ([https://www.youtube.com/@jcgamingonlinux](https://www.youtube.com/@jcgamingonlinux)), agrega fixes y mejoras
 > en los scripts de instalación y sus menús (octubre de 2026), aplicadas y
 > verificadas sobre el original.
 
@@ -26,7 +25,7 @@ Script Desarrollado en su mayoría con Claude Code y mostrado en los directos de
 > 4. **Menús (los 3 scripts):** ahora advertir con las teclas si el usuario
 >    confirma sin seleccionar nada (antes seguía con la sección vacía, sin avisar).
 > 5. **Menús (los 3 scripts):** "Cancelar" cerraba el script (por `set -e`)
->    en vez de volver al menú principal — 57 llamadas a `dialog` protegidas.
+>    en vez de volver al menú principal — 60 llamadas a `dialog` protegidas.
 > 6. **Aviso "WM primero" (los 3 scripts):** entrar a otra sección sin haber
 >    elegido Window Manager muestra un aviso y vuelve al menú principal
 >    (antes el script se cerraba).
@@ -689,7 +688,7 @@ https://www.youtube.com/@LinuxenCasa
   instalación y sus menús (ver [NOTAS-FIXES.md](./NOTAS-FIXES.md)),
   asistido por JC IA.
 
-    https://www.youtube.com/@LinuxenCasa
+    https://www.youtube.com/@jcgamingonlinux
 
 + Todos los que participaron en los directos de instalación y configuración a pulso.
 
