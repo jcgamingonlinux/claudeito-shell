@@ -75,6 +75,45 @@ Repo corregido localmente (sin push). Base: `claudeito-src` (clon de
   el aviso exacto y reabrió el menú; después se marcó hyprland con
   ESPACIO+ENTER y quedó `wm_hyprland=1` en `~/.wm-installer-state`.
 
+### 8. [FUNCIONAL] Menús: "Cancelar" cerraba el script (set -e) en vez de volver al menú (los 3 scripts)
+- **El problema:** el script arranca con `set -euo pipefail`. Con ese modo,
+  un `dialog` que devuelve 1 (Cancelar/ESC/No) **mata el script** si no
+  está protegido con `||`. En "Restaurar backup" (y en el diálogo de
+  confirmación de restauración, el checklist de archivos y la pantalla
+  de bienvenida) las llamadas a dialog estaban sin proteger:
+  `chosen=$(dialog ... --menu ...)` → al presionar Cancelar, `dialog`
+  devuelve 1, la asignación falla y `set -e` cierra todo el script,
+  cuando lo esperado era volver al menú principal.
+- **Fix (los 3 scripts):**
+  - `show_restore_menu`: `chosen=$(dialog ... --menu ...)` ahora termina
+    en `|| return 0` → Cancelar vuelve al menú principal.
+  - `restore_backup`: el checklist `selected=$(dialog ...)` termina en
+    `|| { rm -f "$idx_file"; return 0; }` (y además limpia el índice
+    temporal).
+  - Los dos `--yesno` ("Confirmar restauración" y la pantalla de
+    bienvenida) cambiaron de `dialog ... ; if [[ $? -ne 0 ]]` a un
+    `if dialog ...; then ... else ... fi` directo: con el patrón viejo,
+    el `dialog` suelto que devuelve 1 moría por `set -e` antes de leer
+    el `$?`.
+  - El aviso `warn_no_selection` ahora devuelve el rc del dialog
+    (`|| rc=$?` + `return "$rc"`), y los 5 menús usan `if ! warn_
+    no_selection ...; then return 0; fi`: ENTER en el aviso reabre el
+    menú; **ESC en el aviso vuelve al menú principal sin tocar la
+    selección** (lo que dice el propio texto del aviso).
+  - Todos los msgbox/infobox restantes (Resumen, Leeme, Bienvenida,
+    Preparando, "no hay backups", "restauración completada", etc.)
+    llevan `|| true` para que un ESC/cierre no mate el script.
+- **Verificado:** harness contra el código real extraído de cada script
+  (4 escenarios por archivo, 15 ejecuciones): cancelar en el menú de
+  fechas, cancelar en el checklist, "No" en la confirmación, y una
+  restauración completa exitosa (archivo realmente restaurado). Los 3
+  scripts pasan.
+
+### 9. [PEDIDO] Créditos: "JC Gaming On Linux - fork, mejoras y testeo, asistido por JC IA"
+- Agregado en los 3 scripts: (a) bloque de créditos al inicio del
+  archivo y (b) en el diálogo "Instrucciones - Leeme" (el crédito que
+  se ve desde el menú principal), debajo de "Script by Gabriel Parri".
+
 ## Verificado (no era bug)
 - `xdg-user-dirs-update` (trixie/forky): es un **comando** (del
   paquete `xdg-user-dirs`), no un paquete a instalar. El paquete

@@ -19,6 +19,8 @@ set -euo pipefail
 # https://www.youtube.com/@alvarovalcer
 #
 # CZOTTA y Adolfo Perez - Reportan modulo de bluetooth OK
+#
+# JC Gaming On Linux - fork, mejoras y testeo, asistido por JC IA
 ####################
 
 #
@@ -573,9 +575,12 @@ save_state() {
 warn_no_selection() {
     local title="$1"
     local detalle="$2"
+    local rc=0
+    # || rc=$?: con set -e, un dialog que devuelve 1 (ESC) mataría el script.
     dialog --title "$title" --msgbox \
         "No has seleccionado ninguna opción.\n\n$detalle\n\nTeclas:\n  ESPACIO: marcar / desmarcar una opción\n  ENTER: confirmar la selección\n\nElegí al menos una opción,\no presioná ESC para volver (no cambia la selección actual)." \
-        16 80
+        16 80 || rc=$?
+    return "$rc"
 }
 
 
@@ -600,8 +605,11 @@ show_wm_menu() {
         # Se marcó algo: lo aplico
         [[ -n "$out" ]] && break
 
-        # No se marcó nada: aviso con las teclas y vuelvo a mostrar el menú
-        warn_no_selection "Wayland Compositors" "Para continuar necesitás seleccionar al menos un compositor."
+        # No se marcó nada: aviso con las teclas. ENTER reabre el menú;
+        # ESC vuelve al menú principal sin tocar la selección actual.
+        if ! warn_no_selection "Wayland Compositors" "Para continuar necesitás seleccionar al menos un compositor."; then
+            return 0
+        fi
     done
 
     # Checklist => múltiples; limpio y marco lo elegido
@@ -634,7 +642,9 @@ show_software_menu() {
 
         [[ -n "$out" ]] && break
 
-        warn_no_selection "Paquetes de Software" "Para continuar necesitás seleccionar al menos un pack."
+        if ! warn_no_selection "Paquetes de Software" "Para continuar necesitás seleccionar al menos un pack."; then
+            return 0   # ESC en el aviso: volver al menú principal
+        fi
     done
 
     # Radiolist -> una sola opción activa
@@ -667,7 +677,9 @@ show_flatpak_menu() {
 
         [[ -n "$out" ]] && break
 
-        warn_no_selection "Apps Flatpak (Flathub)" "Para instalar apps Flatpak necesitás seleccionar al menos una."
+        if ! warn_no_selection "Apps Flatpak (Flathub)" "Para instalar apps Flatpak necesitás seleccionar al menos una."; then
+            return 0   # ESC en el aviso: volver al menú principal
+        fi
     done
 
     for k in "${!FLATPAK_DESC[@]}"; do SEL_FLATPAK[$k]=0; done
@@ -698,7 +710,9 @@ show_apps_menu() {
 
         [[ -n "$out" ]] && break
 
-        warn_no_selection "Aplicaciones Adicionales" "Para continuar necesitás seleccionar al menos una aplicación."
+        if ! warn_no_selection "Aplicaciones Adicionales" "Para continuar necesitás seleccionar al menos una aplicación."; then
+            return 0   # ESC en el aviso: volver al menú principal
+        fi
     done
 
     for k in "${!APPS_DESC[@]}"; do SEL_APPS[$k]=0; done
@@ -738,7 +752,9 @@ show_dm_menu() {
 
         [[ -n "$out" ]] && break
 
-        warn_no_selection "Display Managers" "Para continuar necesitás seleccionar al menos un display manager."
+        if ! warn_no_selection "Display Managers" "Para continuar necesitás seleccionar al menos un display manager."; then
+            return 0   # ESC en el aviso: volver al menú principal
+        fi
     done
 
     # Radiolist => una sola opción
@@ -780,7 +796,7 @@ show_summary() {
     for k in "${!DM_DESC[@]}"; do
         [[ ${SEL_DM[$k]} -eq 1 ]] && summary+="- ${DM_DESC[$k]}\n"
     done
-    dialog --title "Resumen" --msgbox "$summary" 20 78
+    dialog --title "Resumen" --msgbox "$summary" 20 78 || true
 }
 
 
@@ -794,6 +810,7 @@ y Software para Debian GNU/Linux 13/Trixie - 64 Bits.
 youtube.com/@LinuxenCasa
 https://gitlab.com/linux-en-casa/claudito-shell
 Script by Gabriel Parri - gabeeOS Linux.
+JC Gaming On Linux - fork, mejoras y testeo, asistido por JC IA
 
 Agradecimientos a Johan David M. por la compilación de los
 paquetes de quickshell y niri.
@@ -812,7 +829,7 @@ https://gitlab.com/linux-en-casa/claudito-shell"
 
 
 
-    dialog --title "Instrucciones - Leeme" --msgbox "$msg" 20 78
+    dialog --title "Instrucciones - Leeme" --msgbox "$msg" 20 78 || true
 
 }
 
@@ -1411,7 +1428,7 @@ install_selected() {
         fi
     done
 
-    dialog --title "Instalación" --msgbox "Instalación completada. Por favor, cierra sesión o reinicia para aplicar los cambios. Selecciona tu WM/DM en el gestor de inicio de sesión. Consulta $LOGFILE para detalles." 10 60
+    dialog --title "Instalación" --msgbox "Instalación completada. Por favor, cierra sesión o reinicia para aplicar los cambios. Selecciona tu WM/DM en el gestor de inicio de sesión. Consulta $LOGFILE para detalles." 10 60 || true
     exec > /dev/tty 2>&1
     clear   # <<< limpia la pantalla al terminar todo el proceso
 }
@@ -1453,18 +1470,20 @@ de los paquetes (empiezan por deb-src ) en /etc/apt/sources.list
 ¿Deseas continuar?"
 
     # Cuadro con Sí/No
-    dialog --title "Instalador Trixie - Bienvenida" \
-           --yesno "$msg" 25 78
-
-    # Si el usuario elige "No" o cancela, salimos
-    if [[ $? -ne 0 ]]; then
+    # if/else directo (no "if [[ $? -ne 0 ]]" a la línea siguiente): con
+    # set -e, un dialog suelto que devuelve 1 (No) mataría el script.
+    if dialog --title "Instalador Trixie - Bienvenida" \
+           --yesno "$msg" 25 78; then
+        :
+    else
+        # Si el usuario elige "No" o cancela, salimos
         clear
         echo "Instalación cancelada por el usuario."
         exit 0
     fi
 
     # (Opcional) mini pantalla de “Preparando…”
-    dialog --title "Preparando" --infobox "Comprobando requisitos…" 5 50
+    dialog --title "Preparando" --infobox "Comprobando requisitos…" 5 50 || true
     sleep 1
 }
 
@@ -1518,29 +1537,27 @@ restore_backup() {
     if [[ ${#items[@]} -eq 0 ]]; then
         rm -f "$idx_file"
         dialog --title "Restaurar backup" \
-               --msgbox "No se encontraron archivos en el backup:\n$bdir" 8 70
+               --msgbox "No se encontraron archivos en el backup:\n$bdir" 8 70 || true
         return 0
     fi
 
     # Checklist con todos los ítems del backup
     local selected
+    # || {...}: con set -e, cancelar (rc=1) sin este guard mataría el script.
     selected=$(dialog --title "Restaurar backup: $chosen_date" \
         --checklist "Seleccioná los archivos/carpetas a restaurar\n(Espacio para marcar, Enter para confirmar):" \
         22 78 15 \
         "${items[@]}" \
-        3>&1 1>&2 2>&3)
-    local dlg_ret=$?
-
-    if [[ $dlg_ret -ne 0 || -z "$selected" ]]; then
-        rm -f "$idx_file"
-        return 0
-    fi
+        3>&1 1>&2 2>&3) || { rm -f "$idx_file"; return 0; }
 
     # Confirmación antes de sobreescribir
-    dialog --title "Confirmar restauración" \
+    # if/else directo (no "if [[ $? -ne 0 ]]" a la línea siguiente): con
+    # set -e, un dialog suelto que devuelve 1 (No) mataría el script.
+    if dialog --title "Confirmar restauración" \
            --yesno "¿Restaurar los archivos seleccionados?\nSe sobreescribirá el contenido actual." \
-           8 60
-    if [[ $? -ne 0 ]]; then
+           8 60; then
+        :
+    else
         rm -f "$idx_file"
         return 0
     fi
@@ -1585,7 +1602,7 @@ restore_backup() {
 
     dialog --title "Restauración completada" \
            --msgbox "Restaurados: $ok archivo(s).\nErrores: $fail.\n\nRevisa la terminal para ver el detalle." \
-           10 60
+           10 60 || true
 }
 
 
@@ -1595,7 +1612,7 @@ show_restore_menu() {
     if [[ ! -d "$backupbase" ]]; then
         dialog --title "Restaurar backup" \
                --msgbox "No existe el directorio de backups:\n$backupbase\n\nAún no se ha realizado ninguna instalación con backup." \
-               10 70
+               10 70 || true
         return 0
     fi
 
@@ -1608,7 +1625,7 @@ show_restore_menu() {
     if [[ ${#dates[@]} -eq 0 ]]; then
         dialog --title "Restaurar backup" \
                --msgbox "No hay backups disponibles en:\n$backupbase" \
-               8 60
+               8 60 || true
         return 0
     fi
 
@@ -1621,14 +1638,13 @@ show_restore_menu() {
     done
 
     local chosen
+    # || return 0: con set -e, cancelar (rc=1) sin este guard mataría el
+    # script; así "Cancelar" vuelve al menú principal.
     chosen=$(dialog --title "Restaurar backup" \
         --menu "Seleccioná la fecha del backup a restaurar:" \
         20 78 10 \
         "${menu_items[@]}" \
-        3>&1 1>&2 2>&3)
-    local dlg_ret=$?
-
-    [[ $dlg_ret -ne 0 || -z "$chosen" ]] && return 0
+        3>&1 1>&2 2>&3) || return 0
 
     restore_backup "$chosen"
 }
