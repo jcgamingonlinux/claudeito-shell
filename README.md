@@ -4,17 +4,17 @@
 
 ![Claudito Shell](./imagenes/capibara-claudito.png)
 
-Hecho con [Quickshell](https://quickshell.org) · Software libre (GPLv3) · Desarrollado en su mayoría con Claude Code y mostrado en los directos de [**LinuxenCasa**]
+Hecho con [Quickshell](https://quickshell.org) · 
+Software libre (GPLv3) · 
+Script Desarrollado en su mayoría con Claude Code y mostrado en los directos de [**LinuxenCasa**]
 
 > ### 🍴 Fork
-> Este repo es un **fork** del repo original
-> [linux-en-casa/claudito-shell](https://gitlab.com/linux-en-casa/claudito-shell) (GitLab),
-> donde el script de instalación lo desarrolló **Gabriel Parri** (gabeeOS Linux).
-> Este fork, mantenido por **JC Gaming On Linux**
+> Este repo es un **fork**
+> Mantenido por **JC Gaming On Linux**
 > (https://www.youtube.com/@jcgamingonlinux)), agrega fixes y mejoras
 > en los scripts de instalación y sus menús (octubre de 2026), aplicadas y
 > verificadas sobre el original.
->
+
 > **Fixes de este fork (resumen):**
 >
 > 1. **[BLOQUEANTE] `01-install-arch.sh`:** el paquete `xorg` no existe en
@@ -39,6 +39,13 @@ Hecho con [Quickshell](https://quickshell.org) · Software libre (GPLv3) · Desa
 > Todos los fixes fueron verificados con harness unitarios contra el código
 > real y pruebas en vivo. Detalles completos (causa, fix y verificación de
 > cada uno): [NOTAS-FIXES.md](./NOTAS-FIXES.md)
+
+
+> repo original:
+> [linux-en-casa/claudito-shell](https://gitlab.com/linux-en-casa/claudito-shell) (GitLab),
+> donde el script de instalación lo desarrolló **Gabriel Parri** (gabeeOS Linux).
+>
+
 
 **Funciona en:** [niri](https://github.com/YaLTeR/niri) · [Sway](https://swaywm.org) · [Hyprland](https://hyprland.org) (config Lua, 0.55+) · [mango](https://github.com/mangowm/mango)
 
