@@ -114,6 +114,27 @@ Repo corregido localmente (sin push). Base: `claudeito-src` (clon de
   archivo y (b) en el diálogo "Instrucciones - Leeme" (el crédito que
   se ve desde el menú principal), debajo de "Script by Gabriel Parri".
 
+### 10. [PEDIDO] Advertencia "WM primero" + créditos en Bienvenida (los 3 scripts)
+- **Problema reportado:** al pasar a otra sección sin haber elegido un
+  Window Manager, el script se cerraba en vez de indicar que falta el WM.
+- **Fix (los 3 scripts):**
+  - Nueva función `wm_selected()` (0 = hay al menos un WM marcado).
+  - En el bucle del menú principal, toda opción que no sea `wm` pasa
+    primero por `if ! wm_selected; then`: muestra el aviso
+    "Falta el Window Manager — Todavía no seleccionaste ningún Window
+    Manager. Vole al menú principal y elegí primero el WM (opción 1)
+    antes de continuar." y, tras Aceptar (ENTER), `continue` de vuelta
+    al menú principal. Con WM elegido, las secciones abren como siempre.
+  - Créditos "JC Gaming On Linux - fork, mejoras y testeo, asistido por
+    JC IA" agregados también en la pantalla de **Bienvenida** (bajo
+    "Script by Gabriel Parri"), igual que en el Leeme.
+- **Verificado en vivo (mini PC, HOME fresco):** bienvenida muestra el
+  crédito; entrar a software/apps/dm/summary/restore/leeme sin WM
+  muestra el aviso y Aceptar vuelve al menú principal; con WM marcado
+  (niri) las secciones abren sin aviso. Secciones probadas sin WM
+  (todas OK, sin crash): software (basico), apps (yay), dm (sddm),
+  summary, restore, leeme.
+
 ## Verificado (no era bug)
 - `xdg-user-dirs-update` (trixie/forky): es un **comando** (del
   paquete `xdg-user-dirs`), no un paquete a instalar. El paquete

@@ -583,6 +583,15 @@ warn_no_selection() {
     return "$rc"
 }
 
+# ¿Se seleccionó al menos un WM? (0 = sí, 1 = no)
+wm_selected() {
+    local k
+    for k in "${!WM_DESC[@]}"; do
+        [[ ${SEL_WM[$k]} -eq 1 ]] && return 0
+    done
+    return 1
+}
+
 
 show_wm_menu() {
     local items=()
@@ -1452,6 +1461,7 @@ y Software para Debian GNU/Linux 13/Trixie - 64 Bits.
 youtube.com/@LinuxenCasa
 https://gitlab.com/linux-en-casa/claudito-shell
 Script by Gabriel Parri - gabeeOS Linux
+JC Gaming On Linux - fork, mejoras y testeo, asistido por JC IA
 
 Sistema Operativo:  ${distro} ${ver}
 Usuario: ${user}   ---   Equipo: ${host}
@@ -1684,13 +1694,25 @@ main() {
 
         case "$action" in
             wm) show_wm_menu ;;
-            software) show_software_menu ;;
-            apps) show_apps_menu ;;
-            dm) show_dm_menu ;;
-            summary) show_summary ;;
-            restore) show_restore_menu ;;
-            leeme) show_leeme_menu ;;
-            install) install_selected; exit 0 ;;
+            *)
+                # Sin WM seleccionado, las demás secciones avisan que falta
+                # el WM y, tras Aceptar, vuelven al menú principal.
+                if ! wm_selected; then
+                    dialog --title "Falta el Window Manager" --msgbox \
+                        "Todavía no seleccionaste ningún Window Manager.\n\nVole al menú principal y elegí primero el WM (opción 1) antes de continuar." \
+                        12 70 || true
+                    continue
+                fi
+                case "$action" in
+                    software) show_software_menu ;;
+                    apps) show_apps_menu ;;
+                    dm) show_dm_menu ;;
+                    summary) show_summary ;;
+                    restore) show_restore_menu ;;
+                    leeme) show_leeme_menu ;;
+                    install) install_selected; exit 0 ;;
+                esac
+                ;;
         esac
     done
 
