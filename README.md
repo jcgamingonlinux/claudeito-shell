@@ -150,7 +150,7 @@ Son scripts en bash que usan `dialog` para los menús interactivos. Descargá el
 
 ```sh
 git clone https://github.com/jcgamingonlinux/claudeito-shell.git
-cd claudito-shell
+cd claudeito-shell
 bash 01-install-arch.sh        # Arch Linux
 # bash 02-install-trixie.sh    # Debian 13 Trixie
 # bash 03-install-forky.sh     # Debian 14 Forky
