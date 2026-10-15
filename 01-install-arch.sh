@@ -21,6 +21,7 @@ set -euo pipefail
 # CZOTTA y Adolfo Perez - Reportan modulo de bluetooth OK
 #
 # JC Gaming On Linux - fork, mejoras y testeo, asistido por JC IA
+# https://www.youtube.com/@jcgamingonlinux
 ####################
 
 #
@@ -54,6 +55,7 @@ echo "en Arch Linux y Derivadas con SystemD"
 echo "QuickShell by Claude Code"
 animate_text "------------------------------------"
 animate_text "https://www.youtube.com/@LinuxenCasa"
+animate_text "https://www.youtube.com/@jcgamingonlinux"
 animate_text "------------------------------------"
 sleep 0.2
 echo "Se mostrará un menú hecho con Dialog"
@@ -235,8 +237,6 @@ BACKUPDIR="$HOME/.config-backup/$DATE"
         neovim
         sox
         vlc
-
-
         gimp
     )
 
@@ -266,7 +266,7 @@ BACKUPDIR="$HOME/.config-backup/$DATE"
         gparted
         gvfs
 	    imagemagick
-            ttf-jetbrains-mono-nerd
+        ttf-jetbrains-mono-nerd
 	    libnotify
         mtpfs
 	    network-manager-applet
@@ -284,13 +284,11 @@ BACKUPDIR="$HOME/.config-backup/$DATE"
 	    xdg-user-dirs
         yad
        	zenity
-
-
-	nwg-displays
-	pipewire
-	pipewire-alsa
-	pipewire-pulse
-	wireplumber
+       	nwg-displays
+       	pipewire
+	    pipewire-alsa
+	    pipewire-pulse
+	    wireplumber
 )
 
 
@@ -381,7 +379,7 @@ declare -A WM_DESC=(
 declare -A SOFTWARE_DESC=(
     [basico]="Básico - (Thunar, Firefox ...)"
     [intermedio]="Intermedio - (LibreOffice, mpv ...)"
-    [full]="Full - Todo el BloatWare de Paquetes"
+    [full]="Full - Todo el BloatWare de Paquetes al más puro estilo Windows 11"
 )
 
 declare -A APPS_DESC=(

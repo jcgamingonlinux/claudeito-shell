@@ -2,6 +2,8 @@
 
 (fork de `https://gitlab.com/linux-en-casa/claudito-shell`).
 
+Publicado como fork: `https://github.com/jcgamingonlinux/claudeito-shell` (main).
+
 ## Bugs corregidos
 
 ### 1. [BLOQUEANTE] `01-install-arch.sh` — paquete inexistente `xorg`
@@ -164,6 +166,25 @@
   inicializado para todas las claves, por lo que `wm_selected` es
   seguro bajo `set -u`.
 
+### 12. Crédito de YouTube + descripción del pack `full` (los 3 scripts)
+- **Modificación hecha en el script de Arch, replicada en 02/03:**
+  - Créditos del header: línea `# https://www.youtube.com/@jcgamingonlinux`
+    bajo "JC Gaming On Linux - fork, mejoras y testeo, asistido por JC IA".
+  - Bienvenida: `animate_text "https://www.youtube.com/@jcgamingonlinux"`
+    bajo la línea de @LinuxenCasa.
+  - `SOFTWARE_DESC [full]`: "Full - Todo el BloatWare de Paquetes" →
+    "Full - Todo el BloatWare de Paquetes al más puro estilo Windows 11".
+  - En `01`: además, limpieza de la lista de paquetes (líneas en blanco
+    dentro de `pkgs_extra_full` y `pkgs_wm_wayland` quitadas, e
+    indentación corregida en `ttf-jetbrains-mono-nerd` y el bloque
+    `nwg-displays`/`pipewire`/`pipewire-alsa`/`pipewire-pulse`/
+    `wireplumber`); en `03` el mismo bloque `nwg-displays`/`pipewire*`
+    llevaba las líneas en blanco y la indentación vieja → mismo fix.
+    En `02` las listas ya estaban limpias (no aplica).
+- **Verificado:** `bash -n` OK en los 3; conteo de patrones
+  (`jcgamingonlinux` ×2 y "Windows 11" ×1 en cada uno); bytes del bloque
+  `nwg-displays` de `03` idénticos a los de `01` (verificado con
+  `cat -A`).
 
 ## Optimizaciones APLICADAS (0.2)
 
