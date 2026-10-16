@@ -841,10 +841,8 @@ install_selected() {
     exec > >(tee -i "$LOGFILE") 2>&1
     echo ">> Iniciando instalación..."
     check_internet
-    sudo apt update
-    check_error "No se pudo actualizar el índice de paquetes." || exit 1
-    sudo apt upgrade -y
-    check_error "No se pudo actualizar el sistema." || exit 1
+    sudo apt update || check_error "No se pudo actualizar el índice de paquetes."
+    sudo apt upgrade -y || check_error "No se pudo actualizar el sistema."
 
 
     ############################################
@@ -858,17 +856,14 @@ install_selected() {
             echo ">> Instalando paquete $k..."
             case "$k" in
                 basico)
-                    sudo apt install -y "${pkgs_base[@]}"
-                    check_error "No se pudieron instalar las aplicaciones básicas." || exit 1
+                    sudo apt install -y "${pkgs_base[@]}" || check_error "No se pudieron instalar las aplicaciones básicas."
                     # sudo apt install -y --no-install-recommends thunar
                     ;;
                 intermedio)
-                    sudo apt install -y "${pkgs_base[@]}" "${pkgs_extra_intermedio[@]}"
-                    check_error "No se pudieron instalar las aplicaciones intermedias." || exit 1
+                    sudo apt install -y "${pkgs_base[@]}" "${pkgs_extra_intermedio[@]}" || check_error "No se pudieron instalar las aplicaciones intermedias."
                     ;;
                 full)
-                    sudo apt install -y "${pkgs_base[@]}" "${pkgs_extra_intermedio[@]}" "${pkgs_extra_full[@]}"
-                    check_error "No se pudieron instalar las aplicaciones completas." || exit 1
+                    sudo apt install -y "${pkgs_base[@]}" "${pkgs_extra_intermedio[@]}" "${pkgs_extra_full[@]}" || check_error "No se pudieron instalar las aplicaciones completas."
                     ;;
             esac
         fi
@@ -914,40 +909,33 @@ install_selected() {
 	       "$HOME/.local/share/icons" "/usr/local/bin" "$HOME/wallpapers"; do
         if [ ! -d "$dir" ]; then
             if [[ "$dir" == /usr/* || "$dir" == /etc/apt/sources.list.d ]]; then
-                sudo mkdir -p "$dir"
-                check_error "No se pudo crear el directorio $dir." || exit 1
+                sudo mkdir -p "$dir" || check_error "No se pudo crear el directorio $dir."
             else
-                mkdir -p "$dir"
-                check_error "No se pudo crear el directorio $dir." || exit 1
+                mkdir -p "$dir" || check_error "No se pudo crear el directorio $dir."
             fi
         fi
     done
 
     cd $REPOLOCAL/.config/
     backup_if_exists "$HOME/.config/gtk-3.0"
-    cp -r gtk-3.0/ ~/.config/
-    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+    cp -r gtk-3.0/ ~/.config/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
     cd $REPOLOCAL/usr/share/wallpapers/
     backup_system_if_exists "/usr/share/wallpapers/claudito-01.png"
-    sudo cp claudito-01.png /usr/share/wallpapers/
-    check_error "No se pudo copiar el fondo de pantalla a /usr/share/wallpapers." || exit 1
+    sudo cp claudito-01.png /usr/share/wallpapers/ || check_error "No se pudo copiar el fondo de pantalla a /usr/share/wallpapers."
 
 
     ###############################
 
     echo "Instalando paquetes básicos para WM con Wayland..."
-    sudo apt install -y "${pkgs_wm_wayland[@]}"
-    check_error "No se pudieron instalar los paquetes básicos." || exit 1
+    sudo apt install -y "${pkgs_wm_wayland[@]}" || check_error "No se pudieron instalar los paquetes básicos."
 
     for dir in "$HOME/.config" "$HOME/.local" "$HOME/.local/share" \
                "/usr/share/wallpapers" "/usr/share/wayland-sessions" "/usr/local/bin"; do
         if [ ! -d "$dir" ]; then
             if [[ "$dir" == /usr/* ]]; then
-                sudo mkdir -p "$dir"
-                check_error "No se pudo crear el directorio $dir." || exit 1
+                sudo mkdir -p "$dir" || check_error "No se pudo crear el directorio $dir."
             else
-                mkdir -p "$dir"
-                check_error "No se pudo crear el directorio $dir." || exit 1
+                mkdir -p "$dir" || check_error "No se pudo crear el directorio $dir."
             fi
         fi
     done
@@ -999,10 +987,8 @@ install_selected() {
     done
 
     cd $REPOLOCAL/.config/quickshell
-    cp bar-layout.tsv mango-bar-layout.tsv launcher-size.txt wallpaper-fillmode.txt wallpaper-path.txt ~/.config/quickshell
-    check_error "No se pudieron copiar los archivos de configuracion del WC de quickshell" || exit 1
-    cp $REPOLOCAL/wallpapers/claudito-01.png ~/wallpapers
-    check_error "No se pudieron copiar los archivos de configuracion del WC de quickshell" || exit 1
+    cp bar-layout.tsv mango-bar-layout.tsv launcher-size.txt wallpaper-fillmode.txt wallpaper-path.txt ~/.config/quickshell || check_error "No se pudieron copiar los archivos de configuracion del WC de quickshell"
+    cp $REPOLOCAL/wallpapers/claudito-01.png ~/wallpapers || check_error "No se pudieron copiar los archivos de configuracion del WC de quickshell"
 
 
     # Crear directorios del home del usuario
@@ -1032,8 +1018,7 @@ install_selected() {
                         xdg-desktop-portal-hyprland
                         xdg-desktop-portal-gtk
                     )
-                    sudo apt install -y "${pkgs_hyprland[@]}"
-                    check_error "No se pudo instalar hyprland" || exit 1
+                    sudo apt install -y "${pkgs_hyprland[@]}" || check_error "No se pudo instalar hyprland"
 
                     backup_if_exists "$HOME/.config/hypr"
                     if [ -d "$HOME/.config/hypr" ]; then
@@ -1041,8 +1026,7 @@ install_selected() {
                         sudo rm -rf "$HOME/.config/hypr"
                     fi
                     cd $REPOLOCAL/.config/debian-dotfiles
-                    cp -r hypr/ $HOME/.config/
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r hypr/ $HOME/.config/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     backup_if_exists "$HOME/.config/kitty"
                     if [ -d "$HOME/.config/kitty" ]; then
@@ -1050,23 +1034,20 @@ install_selected() {
                         sudo rm -rf "$HOME/.config/kitty"
                     fi
                     cd $REPOLOCAL/.config/
-                    cp -r kitty/ $HOME/.config/
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r kitty/ $HOME/.config/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     backup_if_exists "$HOME/.config/quickshell/hyprland-bar"
                     if [ -d "$HOME/.config/quickshell/hyprland-bar" ]; then
                         echo "borrando directorio"
                         sudo rm -rf "$HOME/.config/quickshell/hyprland-bar"
                     fi
-		            cp -r $REPOLOCAL/.config/quickshell/hyprland-bar/ $HOME/.config/quickshell/hyprland-bar
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+		            cp -r $REPOLOCAL/.config/quickshell/hyprland-bar/ $HOME/.config/quickshell/hyprland-bar || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     ;;
 
                 mango)
                     sudo apt install -y "${pkgs_mango_niri[@]}"
-                    sudo apt install -y foot
-                    check_error "No se pudo instalar mango" || exit 1
+                    sudo apt install -y foot || check_error "No se pudo instalar mango"
 
                     # Compilar e instalar mango
 
@@ -1098,8 +1079,7 @@ install_selected() {
                         sudo rm -rf "$HOME/.config/mango"
                     fi
                     cd $REPOLOCAL/.config/debian-dotfiles
-                    cp -r mango/ $HOME/.config/
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r mango/ $HOME/.config/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     backup_if_exists "$HOME/.config/foot"
                     if [ -d "$HOME/.config/foot" ]; then
@@ -1107,27 +1087,24 @@ install_selected() {
                         sudo rm -rf "$HOME/.config/foot"
                     fi
                     cd $REPOLOCAL/.config/
-                    cp -r foot/ $HOME/.config/
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r foot/ $HOME/.config/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     backup_if_exists "$HOME/.config/quickshell/mango-bar"
                     if [ -d "$HOME/.config/quickshell/mango-bar" ]; then
                         echo "borrando directorio"
                         sudo rm -rf "$HOME/.config/quickshell/mango-bar"
                     fi
-		            cp -r $REPOLOCAL/.config/quickshell/mango-bar/ $HOME/.config/quickshell/mango-bar
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+		            cp -r $REPOLOCAL/.config/quickshell/mango-bar/ $HOME/.config/quickshell/mango-bar || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     if [[ "$MAQUINA_VIRTUAL" == "si" ]]; then
                             if [ -f "/usr/share/wayland-sessions/mango.desktop" ]; then
 				                sudo rm -r /usr/share/wayland-sessions/mango.desktop
 				                cd $REPOLOCAL/usr/share/wayland-sessions
 		                        backup_system_if_exists "/usr/share/wayland-sessions/mango.desktop"
-				                sudo cp mango.desktop /usr/share/wayland-sessions/
+				                sudo cp mango.desktop /usr/share/wayland-sessions/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
 		               		fi
                     fi
 
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
 
 
                     ;;
@@ -1149,8 +1126,7 @@ install_selected() {
                         sudo rm -rf "$HOME/.config/niri"
                     fi
                     cd $REPOLOCAL/.config/debian-dotfiles
-                    cp -r niri/ $HOME/.config/
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r niri/ $HOME/.config/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     backup_if_exists "$HOME/.config/alacritty"
                     if [ -d "$HOME/.config/alacritty" ]; then
@@ -1158,16 +1134,14 @@ install_selected() {
                         sudo rm -rf "$HOME/.config/alacritty"
                     fi
                     cd $REPOLOCAL/.config/
-                    cp -r alacritty/ $HOME/.config/
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r alacritty/ $HOME/.config/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     backup_if_exists "$HOME/.config/quickshell/niri-bar"
                     if [ -d "$HOME/.config/quickshell/niri-bar" ]; then
                         echo "borrando directorio"
                         sudo rm -rf "$HOME/.config/quickshell/niri-bar"
                     fi
-                    cp -r $REPOLOCAL/.config/quickshell/niri-bar/ $HOME/.config/quickshell/niri-bar
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r $REPOLOCAL/.config/quickshell/niri-bar/ $HOME/.config/quickshell/niri-bar || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     ;;
 
@@ -1180,8 +1154,7 @@ install_selected() {
                         xdg-desktop-portal-gtk
                         xdg-desktop-portal-wlr
                     )
-                    sudo apt install -y "${pkgs_sway[@]}"
-                    check_error "No se pudo instalar sway." || exit 1
+                    sudo apt install -y "${pkgs_sway[@]}" || check_error "No se pudo instalar sway."
 
                     backup_if_exists "$HOME/.config/sway"
                     if [ -d "$HOME/.config/sway" ]; then
@@ -1189,8 +1162,7 @@ install_selected() {
                         sudo rm -rf "$HOME/.config/sway"
                     fi
                     cd $REPOLOCAL/.config/debian-dotfiles
-                    cp -r sway/ $HOME/.config/
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r sway/ $HOME/.config/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     backup_if_exists "$HOME/.config/foot"
                     if [ -d "$HOME/.config/foot" ]; then
@@ -1198,27 +1170,24 @@ install_selected() {
                         sudo rm -rf "$HOME/.config/foot"
                     fi
                     cd $REPOLOCAL/.config/
-                    cp -r foot/ $HOME/.config/
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r foot/ $HOME/.config/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     backup_if_exists "$HOME/.config/quickshell/sway-bar"
                     if [ -d "$HOME/.config/quickshell/sway-bar" ]; then
                         echo "borrando directorio"
                         sudo rm -rf "$HOME/.config/quickshell/sway-bar"
                     fi
-                    cp -r $REPOLOCAL/.config/quickshell/sway-bar/ $HOME/.config/quickshell/sway-bar
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r $REPOLOCAL/.config/quickshell/sway-bar/ $HOME/.config/quickshell/sway-bar || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     if [[ "$MAQUINA_VIRTUAL" == "si" ]]; then
                             if [ -f "/usr/share/wayland-sessions/sway.desktop" ]; then
 				                sudo rm -r /usr/share/wayland-sessions/sway.desktop
 				                cd $REPOLOCAL/usr/share/wayland-sessions
 		                        backup_system_if_exists "/usr/share/wayland-sessions/sway.desktop"
-				                sudo cp sway.desktop /usr/share/wayland-sessions/
+				                sudo cp sway.desktop /usr/share/wayland-sessions/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
 		               		fi
                     fi
 
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
 
 		    ;;
 
@@ -1297,8 +1266,7 @@ install_selected() {
                 scrcpy)
                     sudo apt install -y libsdl2-2.0-0 adb wget gcc git pkg-config meson ninja-build \
                         libsdl2-dev libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev \
-                        libswresample-dev libusb-1.0-0 libusb-1.0-0-dev
-                    check_error "No se pudieron instalar las dependencias de scrcpy." || exit 1
+                        libswresample-dev libusb-1.0-0 libusb-1.0-0-dev || check_error "No se pudieron instalar las dependencias de scrcpy."
 
                     # borro archivos de scrcpy si existen
                     if [ -d "$HOME/.local/src/scrcpy" ]; then
@@ -1312,24 +1280,20 @@ install_selected() {
                         exit 1
                     fi
                     cd scrcpy/
-                    ./install_release.sh
-                    check_error "No se pudo instalar scrcpy." || exit 1
+                    ./install_release.sh || check_error "No se pudo instalar scrcpy."
                     cd
                     ;;
                 virt-manager)
-                    sudo apt install -y qemu-system virt-manager libvirt-daemon-system virt-viewer
-                    check_error "No se pudo instalar virt-manager." || exit 1
+                    sudo apt install -y qemu-system virt-manager libvirt-daemon-system virt-viewer || check_error "No se pudo instalar virt-manager."
 		    sudo adduser $USER libvirt
                     ;;
 
                 flatpak)
                 # Instalar flatpak y agregar Flathub
-                sudo apt install -y flatpak
-                check_error "No se pudo instalar flatpak." || exit 1
+                sudo apt install -y flatpak || check_error "No se pudo instalar flatpak."
 
                 # Agregar remoto flathub si no existe (modo sistema)
-                flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || true
-                check_error "No se pudo añadir el repositorio Flathub." || exit 1
+                flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || check_error "No se pudo añadir el repositorio Flathub."
 
                 # Actualizar metadatos y reparar cache (mejor esfuerzo)
                 flatpak update -y --appstream || true

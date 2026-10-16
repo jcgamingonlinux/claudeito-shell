@@ -790,8 +790,7 @@ install_selected() {
     exec > >(tee -i "$LOGFILE") 2>&1
     echo ">> Iniciando instalación..."
     check_internet
-    sudo pacman -Syu curl --needed --noconfirm
-    check_error "No se pudo actualizar el sistema." || exit 1
+    sudo pacman -Syu curl --needed --noconfirm || check_error "No se pudo actualizar el sistema."
 
 
 
@@ -812,16 +811,13 @@ install_selected() {
             echo ">> Instalando paquete $k..."
             case "$k" in
                 basico)
-                    sudo pacman -S --needed --noconfirm "${pkgs_base[@]}"
-                    check_error "No se pudieron instalar las aplicaciones básicas." || exit 1
+                    sudo pacman -S --needed --noconfirm "${pkgs_base[@]}" || check_error "No se pudieron instalar las aplicaciones básicas."
                     ;;
                 intermedio)
-                    sudo pacman -S --needed --noconfirm "${pkgs_base[@]}" "${pkgs_extra_intermedio[@]}"
-                    check_error "No se pudieron instalar las aplicaciones intermedias." || exit 1
+                    sudo pacman -S --needed --noconfirm "${pkgs_base[@]}" "${pkgs_extra_intermedio[@]}" || check_error "No se pudieron instalar las aplicaciones intermedias."
                     ;;
                 full)
-                    sudo pacman -S --needed --noconfirm "${pkgs_base[@]}" "${pkgs_extra_intermedio[@]}" "${pkgs_extra_full[@]}"
-                    check_error "No se pudieron instalar las aplicaciones completas." || exit 1
+                    sudo pacman -S --needed --noconfirm "${pkgs_base[@]}" "${pkgs_extra_intermedio[@]}" "${pkgs_extra_full[@]}" || check_error "No se pudieron instalar las aplicaciones completas."
                     ;;
             esac
         fi
@@ -865,23 +861,19 @@ install_selected() {
 	       "$HOME/.local/share/icons" "/usr/local/bin" "$HOME/wallpapers"; do
         if [ ! -d "$dir" ]; then
             if [[ "$dir" == /usr/* ]]; then
-                sudo mkdir -p "$dir"
-                check_error "No se pudo crear el directorio $dir." || exit 1
+                sudo mkdir -p "$dir" || check_error "No se pudo crear el directorio $dir."
             else
-                mkdir -p "$dir"
-                check_error "No se pudo crear el directorio $dir." || exit 1
+                mkdir -p "$dir" || check_error "No se pudo crear el directorio $dir."
             fi
         fi
     done
 
     cd $REPOLOCAL/.config/
     backup_if_exists "$HOME/.config/gtk-3.0"
-    cp -r gtk-3.0/ ~/.config/
-    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+    cp -r gtk-3.0/ ~/.config/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
     cd $REPOLOCAL/usr/share/wallpapers/
     backup_system_if_exists "/usr/share/wallpapers/claudito-01.png"
-    sudo cp claudito-01.png /usr/share/wallpapers/
-    check_error "No se pudo copiar el fondo de pantalla a /usr/share/wallpapers." || exit 1
+    sudo cp claudito-01.png /usr/share/wallpapers/ || check_error "No se pudo copiar el fondo de pantalla a /usr/share/wallpapers."
 
 
 
@@ -890,18 +882,15 @@ install_selected() {
     ###############################
 
     echo "Instalando paquetes básicos para WM con Wayland..."
-    sudo pacman -S --needed --noconfirm "${pkgs_wm_wayland[@]}"
-    check_error "No se pudieron instalar los paquetes básicos." || exit 1
+    sudo pacman -S --needed --noconfirm "${pkgs_wm_wayland[@]}" || check_error "No se pudieron instalar los paquetes básicos."
 
     for dir in "$HOME/.config" "$HOME/.local" "$HOME/.local/share" \
                "/usr/share/wallpapers" "/usr/share/wayland-sessions" "/usr/local/bin"; do
         if [ ! -d "$dir" ]; then
             if [[ "$dir" == /usr/* ]]; then
-                sudo mkdir -p "$dir"
-                check_error "No se pudo crear el directorio $dir." || exit 1
+                sudo mkdir -p "$dir" || check_error "No se pudo crear el directorio $dir."
             else
-                mkdir -p "$dir"
-                check_error "No se pudo crear el directorio $dir." || exit 1
+                mkdir -p "$dir" || check_error "No se pudo crear el directorio $dir."
             fi
         fi
     done
@@ -949,10 +938,8 @@ install_selected() {
     done
 
     cd $REPOLOCAL/.config/quickshell
-    cp bar-layout.tsv launcher-size.txt wallpaper-fillmode.txt wallpaper-path.txt ~/.config/quickshell
-    check_error "No se pudieron copiar los archivos de configuracion del WC de quickshell" || exit 1
-    cp $REPOLOCAL/wallpapers/claudito-01.png ~/wallpapers
-    check_error "No se pudieron copiar los archivos de configuracion del WC de quickshell" || exit 1
+    cp bar-layout.tsv launcher-size.txt wallpaper-fillmode.txt wallpaper-path.txt ~/.config/quickshell || check_error "No se pudieron copiar los archivos de configuracion del WC de quickshell"
+    cp $REPOLOCAL/wallpapers/claudito-01.png ~/wallpapers || check_error "No se pudieron copiar los archivos de configuracion del WC de quickshell"
 
 
     # Crear directorios del home del usuario
@@ -983,8 +970,7 @@ install_selected() {
                         xdg-desktop-portal-hyprland
                         xdg-desktop-portal-gtk
                     )
-                    sudo pacman -S --needed --noconfirm "${pkgs_hyprland[@]}"
-                    check_error "No se pudo instalar hyprland" || exit 1
+                    sudo pacman -S --needed --noconfirm "${pkgs_hyprland[@]}" || check_error "No se pudo instalar hyprland"
 
                     backup_if_exists "$HOME/.config/hypr"
 
@@ -994,8 +980,7 @@ install_selected() {
                     fi
 
                     cd $REPOLOCAL/.config/arch-dotfiles
-                    cp -r hypr/ $HOME/.config/
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r hypr/ $HOME/.config/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     backup_if_exists "$HOME/.config/kitty"
                     if [ -d "$HOME/.config/kitty" ]; then
@@ -1003,8 +988,7 @@ install_selected() {
                         sudo rm -rf "$HOME/.config/kitty"
                     fi
                     cd $REPOLOCAL/.config/
-                    cp -r kitty/ $HOME/.config/
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r kitty/ $HOME/.config/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     backup_if_exists "$HOME/.config/quickshell/hyprland-bar"
 
@@ -1013,8 +997,7 @@ install_selected() {
                         sudo rm -rf "$HOME/.config/quickshell/hyprland-bar"
                     fi
 
-                    cp -r $REPOLOCAL/.config/quickshell/hyprland-bar/ $HOME/.config/quickshell/hyprland-bar
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r $REPOLOCAL/.config/quickshell/hyprland-bar/ $HOME/.config/quickshell/hyprland-bar || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     ;;
 
@@ -1027,8 +1010,7 @@ install_selected() {
                         xorg-xwayland
                         xwayland-satellite
                     )
-                    sudo pacman -S --needed --noconfirm "${pkgs_niri[@]}"
-                    check_error "No se pudo instalar niri" || exit 1
+                    sudo pacman -S --needed --noconfirm "${pkgs_niri[@]}" || check_error "No se pudo instalar niri"
 
 
 
@@ -1040,8 +1022,7 @@ install_selected() {
                     fi
 
                     cd $REPOLOCAL/.config/arch-dotfiles
-                    cp -r niri/ $HOME/.config/
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r niri/ $HOME/.config/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     backup_if_exists "$HOME/.config/alacritty"
                     if [ -d "$HOME/.config/alacritty" ]; then
@@ -1049,8 +1030,7 @@ install_selected() {
                         sudo rm -rf "$HOME/.config/alacritty"
                     fi
                     cd $REPOLOCAL/.config/
-                    cp -r alacritty/ $HOME/.config/
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r alacritty/ $HOME/.config/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     backup_if_exists "$HOME/.config/quickshell/niri-bar"
 
@@ -1059,8 +1039,7 @@ install_selected() {
                         sudo rm -rf "$HOME/.config/quickshell/niri-bar"
                     fi
 
-                    cp -r $REPOLOCAL/.config/quickshell/niri-bar/ $HOME/.config/quickshell/niri-bar
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r $REPOLOCAL/.config/quickshell/niri-bar/ $HOME/.config/quickshell/niri-bar || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     ;;
 
@@ -1073,8 +1052,7 @@ install_selected() {
                         xdg-desktop-portal-wlr
                         xorg-xwayland
                     )
-                    sudo pacman -S --needed --noconfirm "${pkgs_sway[@]}"
-                    check_error "No se pudo instalar sway." || exit 1
+                    sudo pacman -S --needed --noconfirm "${pkgs_sway[@]}" || check_error "No se pudo instalar sway."
 
                     backup_if_exists "$HOME/.config/sway"
 
@@ -1084,8 +1062,7 @@ install_selected() {
                     fi
 
                     cd $REPOLOCAL/.config/arch-dotfiles
-                    cp -r sway/ $HOME/.config/
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r sway/ $HOME/.config/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     backup_if_exists "$HOME/.config/foot"
                     if [ -d "$HOME/.config/foot" ]; then
@@ -1093,8 +1070,7 @@ install_selected() {
                         sudo rm -rf "$HOME/.config/foot"
                     fi
                     cd $REPOLOCAL/.config/
-                    cp -r foot/ $HOME/.config/
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+                    cp -r foot/ $HOME/.config/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     backup_if_exists "$HOME/.config/quickshell/sway-bar"
 
@@ -1103,19 +1079,17 @@ install_selected() {
                         sudo rm -rf "$HOME/.config/quickshell/sway-bar"
                     fi
 
-              	    cp -r $REPOLOCAL/.config/quickshell/sway-bar/ $HOME/.config/quickshell/sway-bar
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
+              	    cp -r $REPOLOCAL/.config/quickshell/sway-bar/ $HOME/.config/quickshell/sway-bar || check_error "No se pudieron copiar los dotfiles a ~/.config."
 
                     if [[ "$MAQUINA_VIRTUAL" == "si" ]]; then
                             if [ -f "/usr/share/wayland-sessions/sway.desktop" ]; then
                                 sudo rm -r /usr/share/wayland-sessions/sway.desktop
                                 cd $REPOLOCAL/usr/share/wayland-sessions
                                 backup_system_if_exists "/usr/share/wayland-sessions/sway.desktop"
-                           	    sudo cp sway.desktop /usr/share/wayland-sessions/
+                           	    sudo cp sway.desktop /usr/share/wayland-sessions/ || check_error "No se pudieron copiar los dotfiles a ~/.config."
                            	fi
                     fi
 
-                    check_error "No se pudieron copiar los dotfiles a ~/.config." || exit 1
 		    ;;
 
             esac
@@ -1180,8 +1154,7 @@ install_selected() {
 	       yay)
 
                if [ -d "/tmp/yay" ]; then
-                    sudo rm -rf "/tmp/yay"
-                    check_error "No se pudo borrar /tmp/yay." || exit 1
+                    sudo rm -rf "/tmp/yay" || check_error "No se pudo borrar /tmp/yay."
                fi
 	       cd /tmp
 	       sudo pacman -Syu --needed --noconfirm base-devel go git
@@ -1194,8 +1167,7 @@ install_selected() {
 	       paru)
 
                if [ -d "/tmp/paru" ]; then
-                    sudo rm -rf "/tmp/paru"
-                    check_error "No se pudo borrar /tmp/paru." || exit 1
+                    sudo rm -rf "/tmp/paru" || check_error "No se pudo borrar /tmp/paru."
                fi
 	       cd /tmp
 	       sudo pacman -Syu --needed --noconfirm base-devel go git
@@ -1209,12 +1181,10 @@ install_selected() {
 
                 flatpak)
                 # Instalar flatpak y agregar Flathub
-                sudo pacman -S --needed --noconfirm flatpak
-                check_error "No se pudo instalar flatpak." || exit 1
+                sudo pacman -S --needed --noconfirm flatpak || check_error "No se pudo instalar flatpak."
 
                 # Agregar remoto flathub si no existe (modo sistema)
-                flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || true
-                check_error "No se pudo añadir el repositorio Flathub." || exit 1
+                flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || check_error "No se pudo añadir el repositorio Flathub."
 
                 # Actualizar metadatos y reparar cache (mejor esfuerzo)
                 flatpak update -y --appstream || true

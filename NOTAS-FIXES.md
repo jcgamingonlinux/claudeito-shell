@@ -187,6 +187,38 @@ Publicado como fork: `https://github.com/jcgamingonlinux/claudeito-shell` (main)
   `nwg-displays` de `03` idénticos a los de `01` (verificado con
   `cat -A`).
 
+### 13. [FUNCIONAL] `check_error`: mensajes de error muertos bajo `set -e` (los 3 scripts)
+- **Problema:** el patrón original era:
+  ```
+  cmd
+  check_error "mensaje" || exit 1
+  ```
+  Bajo `set -e` (línea 2), si `cmd` fallaba el script salía **antes** de
+  llegar a `check_error`: el mensaje amable en español nunca se
+  mostraba (código muerto). Solo se veía el error crudo de apt/pacman
+  y el script paraba sin explicación.
+- **Fix:** 97 sitios transformados a `cmd || check_error "mensaje"`:
+  al fallar, `check_error` sí se ejecuta, muestra "Error: …" y sale.
+  En el camino de éxito el comportamiento es idéntico (sin mensaje).
+  Casos especiales:
+  - `flatpak remote-add … || true` + `check_error` (3 sitios, 1 por
+    script): la `|| true` dejaba la check 100% muerta (siempre veía
+    `$?=0`) → la `|| true` se reemplazó por
+    `|| check_error "No se pudo añadir el repositorio Flathub."` (el
+    fallo del remoto ahora es fatal con mensaje; antes continuaba en
+    silencio y el `flatpak install` siguiente fallaba más tarde sin
+    explicación).
+  - 4 sitios donde `check_error` seguía a un bloque `fi` (sway en 01,
+    sway en 02, mango y sway en 03): guard colgado en el `sudo cp
+    *.desktop` del interior del bloque (el punto real de fallo) y la
+    línea muerta eliminada.
+- **Verificado:** `bash -n` OK en los 3; test aislado del patrón
+  (éxito: sin mensaje y continúa; fallo: mensaje + exit 1); diff
+  completo revisado a mano (97 insertions / 194 deletions).
+- **Fuente:** pase de QA round 13 (subagente con ojos frescos) —
+  avisos de `apt update` sin guard; la auditoría propia amplió el
+  finding al patrón completo de `check_error`.
+
 ## Optimizaciones APLICADAS (0.2)
 
 1. **Forky: mango fijado al tag `0.14.4`** (`git clone -b 0.14.4
