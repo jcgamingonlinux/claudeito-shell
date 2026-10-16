@@ -59,7 +59,7 @@ animate_text "https://www.youtube.com/@jcgamingonlinux"
 animate_text "------------------------------------"
 sleep 0.2
 echo "Se mostrará un menú hecho con Dialog"
-echo "que debo instalar si es que no está"
+echo "que debes instalar si es que no está"
 echo "instalado."
 echo "####################################"
 echo "Advertencia:  Script en Pruebas."
@@ -446,7 +446,7 @@ declare -A WM_DESC=(
 declare -A SOFTWARE_DESC=(
     [basico]="Básico - (Thunar, Firefox ...)"
     [intermedio]="Intermedio - (LibreOffice, mpv ...)"
-    [full]="Full - Todo el BloatWare de Paquetes al más puro estilo Windows 11"
+    [full]="Full - BloatWare al más puro estilo Windows 11"
 )
 
 declare -A APPS_DESC=(

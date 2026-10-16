@@ -173,7 +173,8 @@ Publicado como fork: `https://github.com/jcgamingonlinux/claudeito-shell` (main)
   - Bienvenida: `animate_text "https://www.youtube.com/@jcgamingonlinux"`
     bajo la línea de @LinuxenCasa.
   - `SOFTWARE_DESC [full]`: "Full - Todo el BloatWare de Paquetes" →
-    "Full - Todo el BloatWare de Paquetes al más puro estilo Windows 11".
+    "Full - BloatWare al más puro estilo Windows 11" (redacción final;
+    intermedia: "…Todo el BloatWare de Paquetes al más puro estilo…").
   - En `01`: además, limpieza de la lista de paquetes (líneas en blanco
     dentro de `pkgs_extra_full` y `pkgs_wm_wayland` quitadas, e
     indentación corregida en `ttf-jetbrains-mono-nerd` y el bloque

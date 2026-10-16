@@ -37,8 +37,7 @@ Script Desarrollado en su mayoría con Claude Code y mostrado en los directos de
 > 9. **Créditos y descripción Full (los 3 scripts):** canal de YouTube
 >    [@jcgamingonlinux](https://www.youtube.com/@jcgamingonlinux) agregado en
 >    los créditos del header y en la Bienvenida; la descripción del pack
->    `full` ahora dice "Todo el BloatWare de Paquetes al más puro estilo
->    Windows 11".
+>    `full` ahora dice "BloatWare al más puro estilo Windows 11".
 >
 > Todos los fixes fueron verificados con harness unitarios contra el código
 > real y pruebas en vivo. Detalles completos (causa, fix y verificación de
