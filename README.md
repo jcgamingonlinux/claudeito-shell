@@ -684,13 +684,13 @@ https://www.youtube.com/@LinuxenCasa
     - Alvaro Valcer 
        https://www.youtube.com/@alvarovalcer
 
++ Todos los que participaron en los directos de instalación y configuración a pulso.
+
 + **JC Gaming On Linux** — este fork: fixes y mejoras en los scripts de
   instalación y sus menús (ver [NOTAS-FIXES.md](./NOTAS-FIXES.md)),
   asistido por JC IA.
 
     https://www.youtube.com/@jcgamingonlinux
-
-+ Todos los que participaron en los directos de instalación y configuración a pulso.
 
 
 ## Licencia
